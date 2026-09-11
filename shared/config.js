@@ -9,5 +9,5 @@
 // ============================================================
 window.LMS_CONFIG = {
   SUPABASE_URL: "https://shaewuwsrhkmzrxbwbyd.supabase.co",
-  SUPABASE_ANON_KEY: "YOUR-ANON-PUBLIC-KEY"
+  SUPABASE_ANON_KEY: "sb_publishable_Ld9CwVYVigRIgZCRMd1LSQ_A0sm_0aR"
 };
