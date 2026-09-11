@@ -8,6 +8,6 @@
 // INSERT log aktivitas, tidak bisa membaca data mahasiswa lain.
 // ============================================================
 window.LMS_CONFIG = {
-  SUPABASE_URL: "https://YOUR-PROJECT-REF.supabase.co",
+  SUPABASE_URL: "https://shaewuwsrhkmzrxbwbyd.supabase.co",
   SUPABASE_ANON_KEY: "YOUR-ANON-PUBLIC-KEY"
 };
