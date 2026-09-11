@@ -1,0 +1,408 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>P2 Enhanced Entity Relationship Diagram — GHK2AAB3 Basis Data</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&family=Caveat:wght@600&display=swap" rel="stylesheet"><style>:root{
+  --paper:#F4F7FB; --grid:#DFE6F1; --ink:#1B2A4A; --ink2:#50607F; --key:#2F5BEA; --key2:#DCE5FF;
+  --hl:#FFE45C; --pen:#D23A33; --ok:#15916A; --okbg:#DDF4EA; --bad:#C8352E; --badbg:#FBE3E1;
+  --term:#13203B; --termtx:#E4EBF6; --fk:#8A4FD8;
+  --sans:'Plus Jakarta Sans',system-ui,'Segoe UI',Roboto,sans-serif;
+  --mono:'JetBrains Mono',Consolas,'Courier New',monospace;
+  --hand:'Caveat','Comic Sans MS',cursive;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#1B2A4A;font-family:var(--sans);-webkit-font-smoothing:antialiased}
+#app{position:fixed;inset:0;display:grid;place-items:center;overflow:hidden}
+#stage{width:1280px;height:720px;position:relative;flex:none}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;padding:50px 72px 58px;color:var(--ink);
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:32px 32px;background-position:-1px -1px;overflow:hidden;font-size:24px;line-height:1.45}
+.slide.on{display:flex}
+.slide::before{content:"";position:absolute;left:0;top:0;bottom:0;width:10px;background:var(--key)}
+.slide.k-act::before{background:var(--hl)} .slide.k-quiz::before{background:var(--fk)} .slide.k-bug::before{background:var(--pen)} .slide.k-play::before{background:var(--ok)}
+.hd{display:flex;justify-content:space-between;align-items:baseline;font-size:16px;color:var(--ink2);margin-bottom:14px;font-weight:600}
+.hd .tag{display:inline-flex;gap:10px;align-items:center}
+.hd .tag b{background:var(--ink);color:#fff;padding:2px 10px;border-radius:4px;font-weight:700}
+.hd .kind{font-weight:600}
+h1,h2,h3{margin:0;letter-spacing:-.02em;line-height:1.1}
+h2{font-size:44px;font-weight:800;margin-bottom:14px;max-width:26ch}
+h3{font-size:26px;font-weight:700;margin:0 0 8px}
+.lead{font-size:25px;color:var(--ink2);margin:0 0 16px;max-width:52ch}
+p{margin:0 0 12px;max-width:56ch}
+mark{background:linear-gradient(100deg,transparent 2%,var(--hl) 4%,var(--hl) 96%,transparent 98%);color:inherit;padding:0 .15em;border-radius:3px}
+code{font-family:var(--mono);font-size:.86em;background:#E6ECF7;padding:1px 6px;border-radius:4px}
+.body{flex:1;min-height:0;display:flex;flex-direction:column}
+.cols{display:grid;grid-template-columns:1.05fr 1fr;gap:40px;flex:1;min-height:0;align-items:start}
+.cols.wide-l{grid-template-columns:1.4fr 1fr}.cols.wide-r{grid-template-columns:1fr 1.35fr}
+ul.pts{list-style:none;margin:0 0 10px;padding:0;max-width:56ch}
+ul.pts li{position:relative;padding-left:30px;margin:0 0 10px}
+ul.pts li::before{content:"";position:absolute;left:4px;top:.5em;width:12px;height:12px;background:var(--key);border-radius:2px}
+ul.pts li b{color:var(--ink)}
+ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;max-width:58ch}
+ol.steps li{counter-increment:s;position:relative;padding-left:48px;margin:0 0 12px}
+ol.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:34px;height:34px;border-radius:50%;background:var(--ink);color:#fff;font-weight:800;font-size:18px;display:grid;place-items:center}
+.pen{font-family:var(--hand);color:var(--pen);font-size:30px;line-height:1.15;transform:rotate(-1.2deg);border-left:3px solid var(--pen);padding:4px 0 4px 14px;margin:6px 0 10px;max-width:40ch}
+.pen small{display:block;font-family:var(--sans);font-size:15px;color:var(--pen);font-weight:700;transform:none;margin-bottom:2px}
+.box{background:#fff;border:2px solid var(--ink);border-radius:10px;padding:16px 20px;box-shadow:5px 5px 0 var(--ink)}
+.box.soft{border-color:#C9D4E6;box-shadow:none}
+.box h3{font-size:22px}
+.tip{background:var(--key2);border-radius:8px;padding:12px 16px;font-size:20px;margin-top:8px}
+.small{font-size:19px}.xs{font-size:16px;color:var(--ink2)}
+.chip{display:inline-block;font-size:16px;font-weight:700;padding:3px 12px;border-radius:999px;background:var(--ink);color:#fff;margin-right:6px}
+.chip.y{background:var(--hl);color:var(--ink)}.chip.g{background:var(--ok)}.chip.p{background:var(--fk)}.chip.r{background:var(--pen)}
+/* terminal */
+.term{background:var(--term);color:var(--termtx);border-radius:10px;overflow:hidden;font-family:var(--mono);font-size:19px;line-height:1.5;box-shadow:0 0 0 2px var(--ink)}
+.term .bar{display:flex;justify-content:space-between;align-items:center;background:#0C1629;color:#8FA3C6;font-size:14px;padding:6px 12px;font-family:var(--sans);font-weight:600}
+.term .bar button{font:inherit;background:transparent;color:#BFD0EE;border:1px solid #33476E;border-radius:5px;padding:2px 10px;cursor:pointer}
+.term pre{margin:0;padding:14px 18px;white-space:pre-wrap;word-break:break-word}
+.term.sm{font-size:16px}.term.lg{font-size:22px}
+.kw{color:#7FB4FF;font-weight:700}.st{color:#9FE3A8}.nu{color:#FFC978}.cm{color:#7C8DAE;font-style:italic}.fn{color:#F59CD6}.pr{color:#6F86B0}
+/* tables */
+table.tbl{border-collapse:collapse;font-size:19px;background:#fff;box-shadow:0 0 0 2px var(--ink);border-radius:6px;overflow:hidden;font-variant-numeric:tabular-nums}
+table.tbl th{background:var(--ink);color:#fff;text-align:left;padding:7px 14px;font-weight:700}
+table.tbl td{padding:6px 14px;border-top:1px solid #D6DEEB}
+table.tbl tr:nth-child(even) td{background:#F6F8FC}
+table.tbl td.null{color:#98A6BF;font-style:italic}
+table.tbl .pk{text-decoration:underline;text-underline-offset:3px}
+.rows-note{font-family:var(--mono);font-size:14px;color:var(--ink2);margin-top:6px}
+/* fragments */
+.frag{opacity:0;transform:translateY(8px);transition:opacity .35s,transform .35s}
+.frag.vis{opacity:1;transform:none}
+svg .frag{transform:none}
+/* title */
+.s-title{padding:0;background-size:32px 32px}
+.s-title .tw{padding:64px 88px;display:flex;flex-direction:column;height:100%}
+.s-title .course{font-size:20px;font-weight:700;color:var(--ink2)}
+.s-title .q{margin-top:40px;font-family:var(--mono);font-size:26px;background:var(--term);color:var(--termtx);padding:14px 22px;border-radius:10px;align-self:flex-start;min-width:760px}
+.s-title .q .cur{display:inline-block;width:.6em;background:var(--hl);animation:blink 1s steps(1) infinite;color:transparent}
+@keyframes blink{50%{opacity:0}}
+.s-title .res{margin-top:26px;opacity:0;transition:opacity .5s}
+.s-title .res.vis{opacity:1}
+.s-title .no{font-size:24px;font-weight:800;color:var(--key)}
+.s-title h1{font-size:76px;font-weight:800;letter-spacing:-.035em;max-width:17ch;margin:6px 0 12px}
+.s-title .sub{font-size:26px;color:var(--ink2);max-width:48ch}
+.s-title .meta{margin-top:auto;display:flex;gap:28px;font-size:18px;color:var(--ink2);font-weight:600}
+.s-title .meta span b{color:var(--ink)}
+.s-title .rows-note{font-size:16px;margin-top:10px}
+/* quiz */
+.qz{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px}
+.qz button{font:inherit;font-size:22px;text-align:left;background:#fff;border:2px solid var(--ink);border-radius:10px;padding:14px 18px 14px 58px;cursor:pointer;position:relative;color:var(--ink);min-height:74px}
+.qz button::before{content:attr(data-l);position:absolute;left:14px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:6px;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:800;font-size:17px}
+.qz button:hover{background:#F0F4FF}
+.qz button.right{background:var(--okbg);border-color:var(--ok)}.qz button.right::before{background:var(--ok)}
+.qz button.wrong{background:var(--badbg);border-color:var(--bad)}.qz button.wrong::before{background:var(--bad)}
+.qz button code{font-size:.82em}
+.why{margin-top:14px;font-size:20px;background:#fff;border-left:6px solid var(--ok);padding:10px 16px;border-radius:6px;display:none;max-width:none}
+.why.vis{display:block}
+.qq{font-size:32px;font-weight:700;line-height:1.25;margin:0 0 14px;max-width:44ch}
+/* poll */
+.plat{display:flex;gap:14px;align-items:center;margin:6px 0 14px;font-size:20px}
+.plat .code{font-family:var(--mono);font-weight:700;background:#fff;border:2px dashed var(--ink);padding:4px 14px;border-radius:8px;min-width:140px;outline:none}
+.tally{display:flex;flex-direction:column;gap:10px}
+.tally .row{display:grid;grid-template-columns:1fr 44px 48px;gap:10px;align-items:center;font-size:20px}
+.tally .bar{height:34px;background:#fff;border:2px solid var(--ink);border-radius:6px;position:relative;overflow:hidden}
+.tally .fill{position:absolute;inset:0 auto 0 0;width:0;background:var(--key);transition:width .3s}
+.tally .lbl{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-weight:700;mix-blend-mode:difference;color:#fff}
+.tally button,.btn{font:inherit;font-size:18px;font-weight:700;background:var(--ink);color:#fff;border:none;border-radius:8px;padding:8px 16px;cursor:pointer}
+.btn.ghost{background:#fff;color:var(--ink);border:2px solid var(--ink)}
+.btn.ok{background:var(--ok)}.btn.y{background:var(--hl);color:var(--ink)}
+.btn:focus-visible,.qz button:focus-visible,button:focus-visible{outline:3px solid var(--hl);outline-offset:2px}
+.cloud{min-height:180px;display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;align-content:flex-start;background:#fff;border:2px solid var(--ink);border-radius:10px;padding:14px}
+.cloud span{font-weight:800;color:var(--ink);line-height:1}
+.cloud-in{display:flex;gap:8px;margin-top:10px}
+.cloud-in input{flex:1;font:inherit;font-size:20px;padding:6px 12px;border:2px solid var(--ink);border-radius:8px}
+/* activity */
+.ring{width:210px;height:210px;position:relative;display:grid;place-items:center}
+.ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.ring .t{font-family:var(--mono);font-size:44px;font-weight:700}
+.ring-ctl{display:flex;gap:8px;margin-top:12px;justify-content:center}
+.actwrap{display:grid;grid-template-columns:1fr 260px;gap:36px;align-items:start}
+/* order game */
+.pool,.ans{display:flex;flex-wrap:wrap;gap:10px;min-height:62px;padding:10px;border-radius:10px}
+.pool{background:#fff;border:2px dashed #9FB0CC}.ans{background:var(--key2);border:2px solid var(--key)}
+.tok{font-family:var(--mono);font-size:20px;font-weight:700;background:var(--term);color:var(--termtx);border:none;border-radius:6px;padding:8px 14px;cursor:pointer}
+.ordres{margin-top:12px;font-weight:700;font-size:22px}
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{perspective:800px;height:150px;cursor:pointer;background:none;border:none;padding:0;font:inherit}
+.card .in{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.card.flip .in{transform:rotateY(180deg)}
+.card .f,.card .b{position:absolute;inset:0;backface-visibility:hidden;border-radius:10px;display:grid;place-items:center;padding:12px;text-align:center}
+.card .f{background:#fff;border:2px solid var(--ink);font-weight:800;font-size:24px;box-shadow:4px 4px 0 var(--ink);color:var(--ink)}
+.card .b{background:var(--ink);color:#fff;transform:rotateY(180deg);font-size:18px;line-height:1.35}
+/* playground */
+.pg{display:grid;grid-template-columns:1fr 1fr;gap:20px;flex:1;min-height:0}
+.pg textarea{width:100%;height:190px;font-family:var(--mono);font-size:18px;background:var(--term);color:var(--termtx);border:none;border-radius:10px;padding:14px;resize:none;box-shadow:0 0 0 2px var(--ink)}
+.pg .ctl{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap;align-items:center}
+.pg .chips{display:flex;flex-wrap:wrap;gap:8px}
+.pg .chips button{font-family:var(--mono);font-size:14px;background:#fff;border:1.5px solid var(--ink);border-radius:6px;padding:4px 10px;cursor:pointer;text-align:left;color:var(--ink)}
+.pg .out{background:#fff;border:2px solid var(--ink);border-radius:10px;padding:10px;overflow:auto;max-height:430px;font-size:17px}
+.pg .out table.tbl{font-size:16px;box-shadow:none}
+.pg .stat{font-size:15px;color:var(--ink2);font-family:var(--mono)}
+.pg .err{color:var(--bad);font-family:var(--mono);font-size:16px;white-space:pre-wrap}
+/* widgets */
+.wg-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.wg-btns button.on{background:var(--key)}
+.venn circle{transition:fill .3s}
+tr.hit td{background:#FFF6C2 !important}
+tr.dim td{opacity:.35}
+.grp-0 td:first-child{box-shadow:inset 6px 0 0 #2F5BEA}.grp-1 td:first-child{box-shadow:inset 6px 0 0 #15916A}.grp-2 td:first-child{box-shadow:inset 6px 0 0 #8A4FD8}.grp-3 td:first-child{box-shadow:inset 6px 0 0 #E2A200}
+.flow{display:flex;align-items:center;gap:10px;margin:10px 0 14px;flex-wrap:wrap}
+.flow .st8{padding:8px 14px;border:2px solid var(--ink);border-radius:8px;background:#fff;font-weight:700;font-size:18px;transition:background .3s,color .3s}
+.flow .st8.lit{background:var(--hl)}
+.flow .arr{font-weight:800;color:var(--ink2)}
+.num-in{width:90px;font:inherit;font-size:18px;padding:2px 6px;border:2px solid var(--ink);border-radius:6px}
+.form-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:18px;margin-bottom:10px}
+.form-row input[type=text],.form-row select{font:inherit;font-size:18px;padding:4px 8px;border:2px solid var(--ink);border-radius:6px;background:#fff}
+.matrix td,.matrix th{text-align:center}
+.matrix input{width:22px;height:22px;accent-color:var(--key)}
+.resp{font-family:var(--mono);font-size:17px;padding:10px 14px;border-radius:8px;margin-top:10px;white-space:pre-wrap}
+.resp.ok{background:var(--okbg);color:#0E6A4C}.resp.no{background:var(--badbg);color:#9B231D}
+/* rundown */
+table.run td:first-child{font-family:var(--mono);font-weight:700;white-space:nowrap}
+table.run td:last-child{white-space:nowrap}
+/* hud */
+#hud{position:fixed;left:0;right:0;bottom:0;display:flex;align-items:center;gap:8px;padding:6px 10px;z-index:20;opacity:.15;transition:opacity .2s}
+#hud:hover,#hud:focus-within{opacity:1}
+#hud button{font:600 14px var(--sans);background:#fff;color:var(--ink);border:1.5px solid var(--ink);border-radius:6px;padding:4px 10px;cursor:pointer}
+#hud .ctr{color:#fff;font:700 14px var(--mono);background:var(--ink);padding:4px 10px;border-radius:6px}
+#prog{position:fixed;left:0;top:0;height:5px;background:var(--hl);z-index:21;transition:width .25s}
+.panel{position:fixed;z-index:30;background:#fff;color:var(--ink);border:2px solid var(--ink);border-radius:12px;box-shadow:6px 6px 0 var(--ink);display:none;font-family:var(--sans)}
+.panel.vis{display:block}
+#notes{left:16px;right:16px;bottom:52px;padding:14px 20px;font-size:18px;max-height:34vh;overflow:auto}
+#notes b{color:var(--key)}
+#overview{inset:30px;padding:20px;overflow:auto}
+#overview .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+#overview button{font:600 15px var(--sans);text-align:left;background:var(--paper);border:1.5px solid var(--ink);border-radius:8px;padding:10px;cursor:pointer;color:var(--ink);min-height:70px}
+#overview button.cur{background:var(--hl)}
+#timerbox{right:16px;top:16px;padding:14px 18px;text-align:center}
+#timerbox .t{font:700 54px var(--mono)}
+#timerbox .row{display:flex;gap:6px;justify-content:center;margin-top:6px}
+#timerbox button,#picker button{font:700 14px var(--sans);padding:5px 10px;border-radius:6px;border:1.5px solid var(--ink);background:#fff;cursor:pointer}
+#timerbox.done .t{color:var(--pen);animation:blink .6s steps(1) 6}
+#picker{left:50%;top:50%;transform:translate(-50%,-50%);width:560px;padding:20px}
+#picker textarea{width:100%;height:120px;font:16px var(--sans);border:1.5px solid var(--ink);border-radius:8px;padding:8px}
+#picker .who{font-size:44px;font-weight:800;text-align:center;min-height:64px;margin:10px 0}
+.x{float:right;font-weight:800}
+@media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}.frag{transform:none}}
+@media print{#hud,#prog,.panel{display:none !important}.slide{display:flex !important;position:relative;page-break-after:always}#stage{transform:none !important;height:auto}}
+.k-bug .term{font-size:15px;line-height:1.4}.k-bug .term pre{padding:10px 14px}.k-bug .pen{font-size:25px;margin-top:10px}.k-bug .lead{margin-bottom:10px}
+
+.slide .body>table.tbl{font-size:22px}.slide .body>table.tbl td{padding:9px 16px}
+</style></head><body><div id="app"><div id="stage"><section class="slide s-title" data-h="Judul" data-notes="Sapa kelas, cek kehadiran via QR/absen, tampilkan slide ini saat mahasiswa masuk." data-min="0–3"><div class="tw"><div class="course">GHK2AAB3 Basis Data</div><div class="q"><span class="pr">MariaDB&gt; </span><span class="txt" data-full="SELECT topik FROM pertemuan WHERE no = 2;"></span><span class="cur">_</span></div><div class="res"><div class="no">Pertemuan 2</div><h1>Enhanced Entity Relationship Diagram</h1><p class="sub">Saat ERD biasa tidak cukup: supertype, subtype, weak entity, dan agregasi.</p><div class="rows-note">1 row in set (0.00 sec)</div></div><div class="meta"><span><b>2 × 50 menit</b> kelas teori interaktif</span><span>Tekan <b>F</b> layar penuh, <b>N</b> catatan dosen, <b>T</b> timer, <b>R</b> acak nama</span></div></div></section><section class="slide " data-h="Rencana 100 menit" data-notes="Sampaikan rencana dan target; tanyakan singkat apa yang sudah mereka ingat dari pertemuan lalu." data-min="3–5"><div class="hd"><span class="tag"><b>P2</b>EERD</span><span class="kind">Rencana kelas</span></div><h2>Rencana 100 menit</h2><div class="cols wide-l"><div><table class="tbl run"><tr><th>Menit</th><th>Kegiatan</th><th>Cara</th></tr><tr><td>0–5</td><td>Pembuka, presensi, rencana kelas</td><td><span class="chip ">Klasikal</span></td></tr><tr><td>5–12</td><td>Polling: bisakah seseorang jadi dua peran?</td><td><span class="chip p">Interaksi</span></td></tr><tr><td>12–40</td><td>Generalisasi, spesialisasi, disjoint/overlapping, tipe entitas</td><td><span class="chip ">Klasikal</span></td></tr><tr><td>40–55</td><td>Perbaiki EERD proyek</td><td><span class="chip y">Aktivitas</span></td></tr><tr><td>55–60</td><td>Jeda peregangan</td><td><span class="chip g">Istirahat</span></td></tr><tr><td>60–82</td><td>Associative entity, agregasi, kartu notasi</td><td><span class="chip ">Klasikal</span></td></tr><tr><td>82–94</td><td>Kuis Wayground + pembahasan</td><td><span class="chip p">Kuis</span></td></tr><tr><td>94–100</td><td>Rekap dan exit ticket</td><td><span class="chip y">Refleksi</span></td></tr></table></div><div><h3>Setelah 100 menit, kamu bisa…</h3><ul class="pts"><li>Membedakan ERD dan EERD</li><li>Menggambar generalisasi dan spesialisasi (disjoint/overlapping)</li><li>Mengenali strong, weak, dan associative entity</li><li>Melengkapi EERD proyek kelompok</li></ul></div></div></section><section class="slide k-act" data-h="Pemanasan" data-notes="Tidak ada jawaban salah. Pertanyaan ini menjadi pintu masuk konsep disjoint vs overlapping." data-min="5–10"><div class="hd"><span class="tag"><b>P2</b>EERD</span><span class="kind">Interaksi</span></div><h2>Pemanasan</h2><p class="qq">Seorang mahasiswa semester 5 juga bekerja sebagai asisten praktikum. Di database kampus, dia termasuk…</p><div class="plat"><span class="chip p">Mentimeter</span> Buka <b>menti.com</b>, kode: <span class="code" contenteditable="true" spellcheck="false">ketik kode</span></div><div class="tally"><div class="row"><div class="bar"><div class="fill"></div><span class="lbl">Mahasiswa saja</span></div><span class="n">0</span><button type="button" aria-label="Tambah suara">+1</button></div><div class="row"><div class="bar"><div class="fill"></div><span class="lbl">Asisten saja</span></div><span class="n">0</span><button type="button" aria-label="Tambah suara">+1</button></div><div class="row"><div class="bar"><div class="fill"></div><span class="lbl">Keduanya sekaligus</span></div><span class="n">0</span><button type="button" aria-label="Tambah suara">+1</button></div><div class="row"><div class="bar"><div class="fill"></div><span class="lbl">Tergantung aturan kampus</span></div><span class="n">0</span><button type="button" aria-label="Tambah suara">+1</button></div></div><p class="xs" style="margin-top:8px">Cadangan offline: hitung angkat tangan lalu klik +1 (klik kanan bar untuk −1).</p></section><section class="slide " data-h="ERD vs EERD" data-notes="EERD = ERD + konsep pewarisan (seperti class dan subclass di pemrograman berorientasi objek)." data-min="12–15"><div class="hd"><span class="tag"><b>P2</b>EERD</span><span class="kind">Konsep</span></div><h2>ERD vs EERD</h2><div class="cols "><div><table class="tbl"><tr><th></th><th>ERD</th><th>EERD</th></tr><tr><td><b>Isi</b></td><td>entitas, atribut, relasi</td><td>semua isi ERD +</td></tr><tr><td><b>Tambahan</b></td><td>–</td><td>generalisasi, spesialisasi, agregasi, supertype/subtype</td></tr><tr><td><b>Cocok untuk</b></td><td>kasus sederhana</td><td>data dengan hierarki dan peran</td></tr></table></div><div><div class="box"><h3>Kapan butuh EERD?</h3><p class="small">Saat beberapa entitas punya atribut yang sama <i>dan</i> atribut khas masing-masing. Contoh: dosen tetap digaji bulanan, dosen luar biasa dibayar per jam.</p></div></div></div></section><section class="slide " data-h="Generalisasi: dari bawah ke atas" data-notes="Tekan panah kanan untuk memunculkan tiap tahap: dua entitas → supertype → garis spesialisasi. Contoh dari modul." data-min="15–19"><div class="hd"><span class="tag"><b>P2</b>EERD</span><span class="kind">Konsep</span></div><h2>Generalisasi: dari bawah ke atas</h2><p class="lead">MOBIL dan TRUK punya KdKend, Harga, NoLisensi. Kenapa ditulis dua kali?</p><div class="body"><svg viewBox="0 0 1100 400" style="width:100%;height:auto;display:block" font-family="Plus Jakarta Sans, sans-serif" role="img"><g><rect x="125.0" y="274.0" width="150" height="52" fill="#fff" stroke="#1B2A4A" stroke-width="2.5"/><text x="200" y="307" text-anchor="middle" font-size="19" font-weight="700" fill="#1B2A4A">MOBIL</text><ellipse cx="90" cy="370" rx="74.4" ry="22" fill="#fff" stroke="#1B2A4A" stroke-width="2"/><text x="90" y="376" text-anchor="middle" font-size="16" fill="#1B2A4A">JmlPenumpang</text><line x1="160" y1="326" x2="120" y2="350" stroke="#1B2A4A" stroke-width="2"/><ellipse cx="300" cy="370" rx="52" ry="22" fill="#fff" stroke="#1B2A4A" stroke-width="2"/><text x="300" y="376" text-anchor="middle" font-size="16" fill="#1B2A4A">KecMax</text><line x1="240" y1="326" x2="280" y2="350" stroke="#1B2A4A" stroke-width="2"/><rect x="825.0" y="274.0" width="150" height="52" fill="#fff" stroke="#1B2A4A" stroke-width="2.5"/><text x="900" y="307" text-anchor="middle" font-size="19" font-weight="700" fill="#1B2A4A">TRUK</text><ellipse cx="800" cy="370" rx="52" ry="22" fill="#fff" stroke="#1B2A4A" stroke-width="2"/><text x="800" y="376" text-anchor="middle" font-size="16" fill="#1B2A4A">NoPoros</text><line x1="860" y1="326" x2="820" y2="350" stroke="#1B2A4A" stroke-width="2"/><ellipse cx="1010" cy="370" rx="55.800000000000004" ry="22" fill="#fff" stroke="#1B2A4A" stroke-width="2"/><text x="1010" y="376" text-anchor="middle" font-size="16" fill="#1B2A4A">JmlMuatan</text><line x1="940" y1="326" x2="990" y2="350" stroke="#1B2A4A" stroke-width="2"/></g><g class="frag"><rect x="455.0" y="64.0" width="190" height="52" fill="#FFF6C2" stroke="#1B2A4A" stroke-width="2.5"/><text x="550" y="97" text-anchor="middle" font-size="19" font-weight="700" fill="#1B2A4A">KENDARAAN</text><ellipse cx="390" cy="40" rx="52" ry="22" fill="#fff" stroke="#1B2A4A" stroke-width="2"/><text x="390" y="46" text-anchor="middle" font-size="16" fill="#1B2A4A" text-decoration="underline">KdKend</text><line x1="440" y1="55" x2="470" y2="75" stroke="#1B2A4A" stroke-width="2"/><ellipse cx="550" cy="22" rx="52" ry="22" fill="#fff" stroke="#1B2A4A" stroke-width="2"/><text x="550" y="28" text-anchor="middle" font-size="16" fill="#1B2A4A">Harga</text><line x1="550" y1="44" x2="550" y2="64" stroke="#1B2A4A" stroke-width="2"/><ellipse cx="720" cy="40" rx="55.800000000000004" ry="22" fill="#fff" stroke="#1B2A4A" stroke-width="2"/><text x="720" y="46" text-anchor="middle" font-size="16" fill="#1B2A4A">NoLisensi</text><line x1="660" y1="55" x2="630" y2="75" stroke="#1B2A4A" stroke-width="2"/></g><g class="frag"><circle cx="550" cy="200" r="17" fill="#fff" stroke="#1B2A4A" stroke-width="2.5"/><text x="550" y="206" text-anchor="middle" font-size="18" font-weight="800" fill="#1B2A4A">d</text><line x1="547" y1="116" x2="547" y2="183" stroke="#1B2A4A" stroke-width="2"/><line x1="553" y1="116" x2="553" y2="183" stroke="#1B2A4A" stroke-width="2"/><line x1="537" y1="212" x2="230" y2="274" stroke="#1B2A4A" stroke-width="2"/><line x1="563" y1="212" x2="870" y2="274" stroke="#1B2A4A" stroke-width="2"/><text x="550" y="250" text-anchor="middle" font-size="15" font-weight="600" fill="#2F5BEA">atribut bersama naik ke supertype</text></g></svg></div></section><section class="slide " data-h="Spesialisasi: dari atas ke bawah" data-notes="Contoh diambil dari modul. Tekankan: subtype mewarisi IDDosen dan NamaDosen, lalu menambah atribut khas." data-min="19–23"><div class="hd"><span class="tag"><b>P2</b>EERD</span><span class="kind">Konsep</span></div><h2>Spesialisasi: dari atas ke bawah</h2><p class="lead">Mulai dari Dosen, lalu pecah menjadi tipe yang lebih khusus.</p><div class="body"><svg viewBox="0 0 900 380" style="width:100%;height:auto;display:block" font-family="Plus Jakarta Sans, sans-serif" role="img"><rect x="375.0" y="44.0" width="150" height="52" fill="#FFF6C2" stroke="#1B2A4A" stroke-width="2.5"/><text x="450" y="77" text-anchor="middle" font-size="19" font-weight="700" fill="#1B2A4A">Dosen</text><ellipse cx="250" cy="40" rx="52" ry="22" fill="#fff" stroke="#1B2A4A" stroke-width="2"/><text x="250" y="46" text-anchor="middle" font-size="16" fill="#1B2A4A" text-decoration="underline">IDDosen</text><line x1="300" y1="50" x2="375" y2="62" stroke="#1B2A4A" stroke-width="2"/><ellipse cx="650" cy="40" rx="55.800000000000004" ry="22" fill="#fff" stroke="#1B2A4A" stroke-width="2"/><text x="650" y="46" text-anchor="middle" font-size="16" fill="#1B2A4A">NamaDosen</text><line x1="595" y1="50" x2="525" y2="62" stroke="#1B2A4A" stroke-width="2"/><g class="frag"><circle cx="450" cy="170" r="17" fill="#fff" stroke="#1B2A4A" stroke-width="2.5"/><text x="450" y="176" text-anchor="middle" font-size="18" font-weight="800" fill="#1B2A4A">d</text><line x1="450" y1="96" x2="450" y2="153" stroke="#1B2A4A" stroke-width="2"/><line x1="438" y1="182" x2="240" y2="250" stroke="#1B2A4A" stroke-width="2"/><line x1="462" y1="182" x2="660" y2="250" stroke="#1B2A4A" stroke-width="2"/><rect x="165.0" y="249.0" width="150" height="52" fill="#fff" stroke="#1B2A4A" stroke-width="2.5"/><text x="240" y="282" text-anchor="middle" font-size="19" font-weight="700" fill="#1B2A4A">DosenTetap</text><rect x="585.0" y="249.0" width="150" height="52" fill="#fff" stroke="#1B2A4A" stroke-width="2.5"/><text x="660" y="282" text-anchor="middle" font-size="19" font-weight="700" fill="#1B2A4A">DosenLB</text><ellipse cx="130" cy="350" rx="74.4" ry="22" fill="#fff" stroke="#1B2A4A" stroke-width="2"/><text x="130" y="356" text-anchor="middle" font-size="16" fill="#1B2A4A">GajiPerBulan</text><line x1="190" y1="301" x2="150" y2="328" stroke="#1B2A4A" stroke-width="2"/><ellipse cx="340" cy="350" rx="55.800000000000004" ry="22" fill="#fff" stroke="#1B2A4A" stroke-width="2"/><text x="340" y="356" text-anchor="middle" font-size="16" fill="#1B2A4A">Tunjangan</text><line x1="290" y1="301" x2="320" y2="328" stroke="#1B2A4A" stroke-width="2"/><ellipse cx="560" cy="350" rx="68.2" ry="22" fill="#fff" stroke="#1B2A4A" stroke-width="2"/><text x="560" y="356" text-anchor="middle" font-size="16" fill="#1B2A4A">HonorPerJam</text><line x1="610" y1="301" x2="580" y2="328" stroke="#1B2A4A" stroke-width="2"/><ellipse cx="770" cy="350" rx="68.2" ry="22" fill="#fff" stroke="#1B2A4A" stroke-width="2"/><text x="770" y="356" text-anchor="middle" font-size="16" fill="#1B2A4A">JmlJamKerja</text><line x1="710" y1="301" x2="750" y2="328" stroke="#1B2A4A" stroke-width="2"/></g><g class="frag"><text x="620" y="175" text-anchor="start" font-size="16" font-weight="600" fill="#2F5BEA">d = disjoint (tidak tumpang tindih)</text><text x="620" y="198" text-anchor="start" font-size="16" font-weight="600" fill="#2F5BEA">o = overlapping (boleh keduanya)</text></g></svg></div></section><section class="slide " data-h="Dua pertanyaan untuk setiap hierarki" data-notes="Modul membahas disjoint/overlapping. Tambahan total/parsial penting karena garis ganda di diagram generalisasi modul adalah tanda total." data-min="23–27"><div class="hd"><span class="tag"><b>P2</b>EERD</span><span class="kind">Konsep</span></div><h2>Dua pertanyaan untuk setiap hierarki</h2><div class="body"><div class="cols"><div class="box"><h3>Boleh tumpang tindih?</h3><p class="small"><b>Disjoint (d)</b>: satu instance hanya masuk satu subtype. Dosen tetap <i>atau</i> luar biasa.</p><p class="small"><b>Overlapping (o)</b>: boleh masuk beberapa subtype. Civitas bisa mahasiswa <i>dan</i> karyawan.</p></div><div class="box"><h3>Wajib punya subtype?</h3><p class="small"><b>Total</b> (garis ganda): setiap supertype pasti masuk salah satu subtype.</p><p class="small"><b>Parsial</b> (garis tunggal): boleh ada yang tidak masuk subtype mana pun.</p></div></div></div></section><section class="slide k-quiz" data-h="Kuis: Tabel Civitas dipecah menjadi Mahasiswa dan Karyawan. Kampus" data-notes="" data-min="27–29"><div class="hd"><span class="tag"><b>P2</b>EERD</span><span class="kind">Cek pemahaman</span></div><p class="qq">Tabel Civitas dipecah menjadi Mahasiswa dan Karyawan. Kampus mengizinkan karyawan melanjutkan kuliah. Simbol yang tepat di lingkaran?</p><div class="qz" data-ans="1"><button type="button" data-l="A">d (disjoint)</button><button type="button" data-l="B">o (overlapping)</button><button type="button" data-l="C">Tidak perlu lingkaran</button><button type="button" data-l="D">Belah ketupat ganda</button></div><div class="why"><b>Pembahasan.</b> Seseorang bisa berada di dua subtype sekaligus, jadi overlapping (o). Ingat polling pembuka tadi.</div><div style="margin-top:10px"><button class="btn ghost show-ans" type="button">Tampilkan jawaban</button></div></section><section class="slide " data-h="Strong entity vs weak entity" data-notes="Koreksi halus untuk modul: NIK unik nasional sehingga Ortu tidak memenuhi definisi weak. Tetap hargai modul sebagai ilustrasi notasi." data-min="29–33"><div class="hd"><span class="tag"><b>P2</b>EERD</span><span class="kind">Konsep</span></div><h2>Strong entity vs weak entity</h2><div class="cols "><div><ul class="pts"><li><b>Strong</b>: berdiri sendiri, punya key sendiri. Contoh: Mahasiswa dengan NIM.</li><li><b>Weak</b>: identitasnya numpang pada entitas pemilik. Digambar persegi ganda, relasinya belah ketupat ganda, key parsialnya bergaris putus.</li></ul><div class="pen"><small>Catatan untuk contoh modul</small>Ortu dengan NIK sebenarnya bisa berdiri sendiri, karena NIK sudah unik secara nasional. Contoh weak entity yang lebih jujur ada di slide berikut.</div></div><div><div class="box soft"><h3>Tes cepat</h3><p class="small">Kalau entitas pemiliknya dihapus, apakah data ini masih masuk akal berdiri sendiri? Jika tidak, kemungkinan besar ia weak entity.</p></div></div></div></section><section class="slide " data-h="Weak entity yang dekat dengan kita" data-notes="Contoh: presensi per pertemuan. NoPertemuan hanya unik di dalam satu kelas (partial key)." data-min="33–37"><div class="hd"><span class="tag"><b>P2</b>EERD</span><span class="kind">Konsep</span></div><h2>Weak entity yang dekat dengan kita</h2><div class="body"><svg viewBox="0 0 900 260" style="width:100%;height:auto;display:block" font-family="Plus Jakarta Sans, sans-serif" role="img"><rect x="95.0" y="104.0" width="150" height="52" fill="#fff" stroke="#1B2A4A" stroke-width="2.5"/><text x="170" y="137" text-anchor="middle" font-size="19" font-weight="700" fill="#1B2A4A">Kelas</text><ellipse cx="90" cy="40" rx="55.800000000000004" ry="22" fill="#fff" stroke="#1B2A4A" stroke-width="2"/><text x="90" y="46" text-anchor="middle" font-size="16" fill="#1B2A4A" text-decoration="underline">KodeKelas</text><line x1="110" y1="60" x2="140" y2="104" stroke="#1B2A4A" stroke-width="2"/><polygon points="450,95.0 525.0,130 450,165.0 375.0,130" fill="#fff" stroke="#1B2A4A" stroke-width="2.5"/><polygon points="450,103.0 513.0,130 450,157.0 387.0,130" fill="none" stroke="#1B2A4A" stroke-width="2"/><text x="450" y="136" text-anchor="middle" font-size="15" font-weight="700" fill="#1B2A4A">Memiliki</text><line x1="245" y1="130" x2="375" y2="130" stroke="#1B2A4A" stroke-width="2"/><line x1="522" y1="130" x2="652" y2="130" stroke="#1B2A4A" stroke-width="2"/><line x1="528" y1="130" x2="658" y2="130" stroke="#1B2A4A" stroke-width="2"/><rect x="655.0" y="104.0" width="170" height="52" fill="#fff" stroke="#1B2A4A" stroke-width="2.5"/><rect x="661.0" y="110.0" width="158" height="40" fill="none" stroke="#1B2A4A" stroke-width="2"/><text x="740" y="137" text-anchor="middle" font-size="19" font-weight="700" fill="#1B2A4A">Pertemuan</text><ellipse cx="660" cy="40" rx="72" ry="22" fill="#fff" stroke="#1B2A4A" stroke-width="2"/><text x="660" y="46" text-anchor="middle" font-size="16" fill="#1B2A4A">NoPertemuan</text><line x1="613.8" y1="50" x2="706.2" y2="50" stroke="#1B2A4A" stroke-width="1.6" stroke-dasharray="5 4"/><line x1="680" y1="62" x2="710" y2="104" stroke="#1B2A4A" stroke-width="2"/><ellipse cx="840" cy="40" rx="52" ry="22" fill="#fff" stroke="#1B2A4A" stroke-width="2"/><text x="840" y="46" text-anchor="middle" font-size="16" fill="#1B2A4A">Tanggal</text><line x1="830" y1="62" x2="790" y2="104" stroke="#1B2A4A" stroke-width="2"/><text x="310" y="118" text-anchor="middle" font-size="18" font-weight="600" fill="#2F5BEA">1</text><text x="590" y="118" text-anchor="middle" font-size="18" font-weight="600" fill="#2F5BEA">N</text><text x="450" y="230" text-anchor="middle" font-size="17" font-weight="600" fill="#2F5BEA">PK Pertemuan = (KodeKelas, NoPertemuan)</text></svg><p class="small" style="margin-top:10px">"Pertemuan ke-3" tidak bermakna tanpa tahu kelasnya. Pertemuan ke-3 kelas A berbeda dengan pertemuan ke-3 kelas B.</p></div></section><section class="slide k-quiz" data-h="Kuis: Entitas manakah yang paling tepat dimodelkan sebagai weak en" data-notes="" data-min="37–40"><div class="hd"><span class="tag"><b>P2</b>EERD</span><span class="kind">Cek pemahaman</span></div><p class="qq">Entitas manakah yang paling tepat dimodelkan sebagai weak entity?</p><div class="qz" data-ans="2"><button type="button" data-l="A">Mahasiswa (NIM)</button><button type="button" data-l="B">Mata kuliah (KodeMK)</button><button type="button" data-l="C">Baris item dalam sebuah nota pembelian (no urut item)</button><button type="button" data-l="D">Dosen (IDDosen)</button></div><div class="why"><b>Pembahasan.</b> "Item ke-2" hanya punya arti di dalam nota tertentu. Key-nya menjadi (NoNota, NoUrut).</div><div style="margin-top:10px"><button class="btn ghost show-ans" type="button">Tampilkan jawaban</button></div></section><section class="slide k-act" data-h="Audit EERD kelompok" data-notes="Keliling ke tiap kelompok. Catat pertanyaan yang sering muncul untuk dibahas setelah jeda." data-min="40–55"><div class="hd"><span class="tag"><b>P2</b>EERD</span><span class="kind">Aktivitas</span></div><h2>Audit EERD kelompok</h2><div><span class="chip y">Kelompok proyek</span><span class="chip">15 menit</span></div><div class="actwrap" style="margin-top:16px"><div><ol class="steps"><li>Buka rancangan ERD/EERD proyek kelompok.</li><li>Centang: ada supertype/subtype? disjoint atau overlapping? total atau parsial?</li><li>Cari minimal satu weak entity atau associative entity yang masuk akal.</li><li>Tulis 1 hal yang masih ragu untuk ditanyakan ke dosen.</li></ol><p class="xs" style="margin-top:6px">Tugas modul: EERD kelompok harus memuat seluruh elemen EERD.</p></div><div><div class="ring" data-sec="900"><svg viewBox="0 0 210 210"><circle cx="105" cy="105" r="92" fill="none" stroke="#DCE5FF" stroke-width="14"/><circle class="fg" cx="105" cy="105" r="92" fill="none" stroke="#2F5BEA" stroke-width="14" stroke-linecap="round"/></svg><span class="t"></span></div><div class="ring-ctl"><button class="btn" data-a="go">Mulai</button><button class="btn ghost" data-a="reset">Ulang</button></div></div></div></section><section class="slide " data-h="Associative entity" data-notes="Perkuliahan di modul adalah associative entity yang menghubungkan Dosen, Mahasiswa, dan MK." data-min="60–64"><div class="hd"><span class="tag"><b>P2</b>EERD</span><span class="kind">Konsep</span></div><h2>Associative entity</h2><div class="cols "><div><p>Relasi M:N yang <b>punya atribut sendiri</b> naik kelas menjadi entitas.</p><ul class="pts"><li>Mahasiswa M:N Perkuliahan, lalu relasi <b>Menempuh</b> menyimpan nilai dan tanggal ambil.</li><li>Di diagram: persegi yang di dalamnya ada belah ketupat.</li><li>Nanti menjadi tabel penghubung dengan composite key.</li></ul></div><div><svg viewBox="0 0 420 200" style="width:100%;height:auto;display:block" font-family="Plus Jakarta Sans, sans-serif" role="img"><rect x="105.0" y="60.0" width="210" height="80" fill="#fff" stroke="#1B2A4A" stroke-width="2.5"/><text x="210" y="107" text-anchor="middle" font-size="19" font-weight="700" fill="#1B2A4A"></text><polygon points="210,65.0 300.0,100 210,135.0 120.0,100" fill="#fff" stroke="#1B2A4A" stroke-width="2.5"/><text x="210" y="106" text-anchor="middle" font-size="15" font-weight="700" fill="#1B2A4A">Menempuh</text><text x="210" y="175" text-anchor="middle" font-size="15" font-weight="600" fill="#2F5BEA">associative entity</text></svg></div></div></section><section class="slide " data-h="Agregasi di EERD" data-notes="Agregasi = memperlakukan relasi sebagai entitas agar bisa ikut berelasi lagi. Tekankan beda dengan fungsi agregasi." data-min="64–68"><div class="hd"><span class="tag"><b>P2</b>EERD</span><span class="kind">Konsep</span></div><h2>Agregasi di EERD</h2><div class="body"><svg viewBox="0 0 900 330" style="width:100%;height:auto;display:block" font-family="Plus Jakarta Sans, sans-serif" role="img"><rect x="20" y="20" width="620" height="120" fill="#FFF6C2" stroke="#2F5BEA" stroke-width="2.5" stroke-dasharray="8 6" rx="6"/><rect x="45.0" y="54.0" width="150" height="52" fill="#fff" stroke="#1B2A4A" stroke-width="2.5"/><text x="120" y="87" text-anchor="middle" font-size="19" font-weight="700" fill="#1B2A4A">Mahasiswa</text><polygon points="330,45.0 395.0,80 330,115.0 265.0,80" fill="#fff" stroke="#1B2A4A" stroke-width="2.5"/><text x="330" y="86" text-anchor="middle" font-size="15" font-weight="700" fill="#1B2A4A">Mengambil</text><rect x="455.0" y="54.0" width="150" height="52" fill="#fff" stroke="#1B2A4A" stroke-width="2.5"/><text x="530" y="87" text-anchor="middle" font-size="19" font-weight="700" fill="#1B2A4A">MataKuliah</text><line x1="195" y1="80" x2="265" y2="80" stroke="#1B2A4A" stroke-width="2"/><line x1="395" y1="80" x2="455" y2="80" stroke="#1B2A4A" stroke-width="2"/><g class="frag"><polygon points="330,190.0 390.0,225 330,260.0 270.0,225" fill="#fff" stroke="#1B2A4A" stroke-width="2.5"/><text x="330" y="231" text-anchor="middle" font-size="15" font-weight="700" fill="#1B2A4A">Dinilai</text><line x1="330" y1="140" x2="330" y2="190" stroke="#1B2A4A" stroke-width="2"/><rect x="645.0" y="199.0" width="150" height="52" fill="#fff" stroke="#1B2A4A" stroke-width="2.5"/><text x="720" y="232" text-anchor="middle" font-size="19" font-weight="700" fill="#1B2A4A">Dosen</text><line x1="390" y1="225" x2="645" y2="225" stroke="#1B2A4A" stroke-width="2"/><text x="650" y="45" text-anchor="start" font-size="15" font-weight="600" fill="#2F5BEA">relasi dibungkus</text><text x="650" y="65" text-anchor="start" font-size="15" font-weight="600" fill="#2F5BEA">jadi satu kesatuan</text></g></svg><p class="small" style="margin-top:8px">Dosen menilai <i>pengambilan</i> MK oleh mahasiswa, bukan mahasiswanya saja atau MK-nya saja.</p><div class="pen"><small>Awas istilah kembar</small>Agregasi di EERD ≠ fungsi agregasi SQL (AVG, SUM) di Pertemuan 9.</div></div></section><section class="slide k-quiz" data-h="Kartu notasi EERD" data-notes="Minta mahasiswa acak menjawab dulu sebelum kartu dibalik." data-min="68–73"><div class="hd"><span class="tag"><b>P2</b>EERD</span><span class="kind">Kartu konsep</span></div><h2>Kartu notasi EERD</h2><div class="cards"><button class="card" type="button"><div class="in"><div class="f">Persegi ganda</div><div class="b">Weak entity</div></div></button><button class="card" type="button"><div class="in"><div class="f">Belah ketupat ganda</div><div class="b">Identifying relationship (penghubung weak entity)</div></div></button><button class="card" type="button"><div class="in"><div class="f">Garis bawah putus-putus</div><div class="b">Partial key milik weak entity</div></div></button><button class="card" type="button"><div class="in"><div class="f">Lingkaran berisi d</div><div class="b">Spesialisasi disjoint</div></div></button><button class="card" type="button"><div class="in"><div class="f">Lingkaran berisi o</div><div class="b">Spesialisasi overlapping</div></div></button><button class="card" type="button"><div class="in"><div class="f">Garis ganda ke lingkaran</div><div class="b">Partisipasi total: setiap supertype wajib masuk subtype</div></div></button></div></section><section class="slide k-quiz" data-h="Kuis: Relasi M:N &quot;Mahasiswa mengikuti Lomba&quot; perlu menyimpan perin" data-notes="" data-min="73–76"><div class="hd"><span class="tag"><b>P2</b>EERD</span><span class="kind">Cek pemahaman</span></div><p class="qq">Relasi M:N "Mahasiswa mengikuti Lomba" perlu menyimpan <i>peringkat</i> yang diraih. Peringkat sebaiknya ditempatkan di…</p><div class="qz" data-ans="2"><button type="button" data-l="A">Entitas Mahasiswa</button><button type="button" data-l="B">Entitas Lomba</button><button type="button" data-l="C">Associative entity Keikutsertaan</button><button type="button" data-l="D">Tidak perlu disimpan</button></div><div class="why"><b>Pembahasan.</b> Peringkat milik pasangan mahasiswa–lomba. Mahasiswa bisa juara 1 di satu lomba dan juara 3 di lomba lain.</div><div style="margin-top:10px"><button class="btn ghost show-ans" type="button">Tampilkan jawaban</button></div></section><section class="slide k-act" data-h="Cek rasa percaya diri" data-notes="Jika banyak yang memilih opsi 3, tunjukkan lagi slide generalisasi dan weak entity sebelum kuis." data-min="76–80"><div class="hd"><span class="tag"><b>P2</b>EERD</span><span class="kind">Interaksi</span></div><h2>Cek rasa percaya diri</h2><p class="qq">Seberapa yakin kamu bisa menggambar EERD proyekmu sendiri sekarang?</p><div class="plat"><span class="chip p">Mentimeter</span> Buka <b>menti.com</b>, kode: <span class="code" contenteditable="true" spellcheck="false">ketik kode</span></div><div class="tally"><div class="row"><div class="bar"><div class="fill"></div><span class="lbl">Yakin, tinggal rapikan</span></div><span class="n">0</span><button type="button" aria-label="Tambah suara">+1</button></div><div class="row"><div class="bar"><div class="fill"></div><span class="lbl">Cukup, masih ragu di notasi</span></div><span class="n">0</span><button type="button" aria-label="Tambah suara">+1</button></div><div class="row"><div class="bar"><div class="fill"></div><span class="lbl">Belum, perlu contoh lagi</span></div><span class="n">0</span><button type="button" aria-label="Tambah suara">+1</button></div></div><p class="xs" style="margin-top:8px">Cadangan offline: hitung angkat tangan lalu klik +1 (klik kanan bar untuk −1).</p></section><section class="slide k-quiz" data-h="Kuis Wayground" data-notes="" data-min="82–94"><div class="hd"><span class="tag"><b>P2</b>EERD</span><span class="kind">Kuis</span></div><h2>Kuis Wayground</h2><div class="cols"><div><p class="lead">7 soal pilihan ganda, 20–30 detik per soal. Poin untuk jawaban benar dan cepat.</p><ul class="pts"><li>Dosen: impor file <code>wayground/P02.xlsx</code> ke Wayground (dulu Quizizz), lalu mulai sesi <i>Live</i>.</li><li>Mahasiswa: buka <b>wayground.com/join</b> di HP, masukkan kode.</li><li>Setelah tiap soal, bahas 1 soal yang paling banyak salah.</li></ul></div><div><div class="box"><h3>Kode sesi</h3><p style="font:800 64px var(--mono);margin:6px 0" contenteditable="true" spellcheck="false">------</p><p class="xs">Klik angka di atas untuk mengetik kode dari Wayground.</p></div><div class="tip"><b>Tanpa internet?</b> Pakai slide Kuis cepat di deck ini, jawab dengan angkat kartu A/B/C/D.</div></div></div></section><section class="slide " data-h="Rekap &amp; exit ticket" data-notes="" data-min="94–100"><div class="hd"><span class="tag"><b>P2</b>EERD</span><span class="kind">Penutup</span></div><h2>Rekap & exit ticket</h2><div class="cols"><div><h3>Yang kita bawa pulang</h3><ul class="pts"><li>EERD = ERD + hierarki (supertype/subtype) + agregasi.</li><li>Tanyakan dua hal: disjoint/overlapping dan total/parsial.</li><li>Weak entity meminjam identitas dari pemiliknya.</li></ul></div><div><div class="box"><h3>Exit ticket</h3><p class="small">Gambarkan satu hierarki supertype–subtype dari proyek kelompokmu dalam satu kalimat.</p><p class="xs">Jawab di Mentimeter (open ended) atau tulis di kertas kecil sebelum keluar kelas.</p></div><div class="tip" style="margin-top:18px"><b>Pertemuan berikutnya:</b> Mengubah EERD menjadi skema relasi dan memilih tipe data di ERDPlus.</div></div></div></section></div></div><div id="prog"></div>
+<div id="hud"><button id="b-prev" type="button">&#8592;</button><span class="ctr" id="ctr"></span><button id="b-next" type="button">&#8594;</button>
+<button id="b-ov" type="button">Daftar slide (O)</button><button id="b-notes" type="button">Catatan (N)</button><button id="b-timer" type="button">Timer (T)</button><button id="b-pick" type="button">Acak nama (R)</button><button id="b-fs" type="button">Layar penuh (F)</button><a href="index.html" style="color:#fff;font:600 14px var(--sans);margin-left:auto">Semua pertemuan</a></div>
+<div class="panel" id="notes"><button class="x btn ghost" type="button">Tutup</button><div class="c"></div></div>
+<div class="panel" id="overview"><button class="x btn ghost" type="button">Tutup</button><h3 style="margin:0 0 12px">Lompat ke slide</h3><div class="grid"></div></div>
+<div class="panel" id="timerbox"><button class="x btn ghost" type="button" style="float:none">Tutup</button><div class="t">00:00</div><div class="row"><button data-min="1" type="button">1m</button><button data-min="3" type="button">3m</button><button data-min="5" type="button">5m</button><button data-min="10" type="button">10m</button><button data-min="15" type="button">15m</button><button data-act="pause" type="button">Jeda/Lanjut</button></div></div>
+<div class="panel" id="picker"><button class="x btn ghost" type="button">Tutup</button><h3 style="margin:0 0 8px">Acak nama mahasiswa</h3><textarea placeholder="Tempel daftar nama, satu per baris (tidak disimpan setelah tab ditutup)"></textarea><div class="who"></div><div style="display:flex;gap:8px;align-items:center"><button data-act="spin" type="button">Acak</button><button data-act="clear" type="button">Reset riwayat</button><label style="font-size:14px"><input type="checkbox" id="pk-uniq" checked> jangan ulang nama yang sudah terpilih</label></div></div><script>window.DECK={"no": 2, "title": "Enhanced Entity Relationship Diagram", "seed": "\nCREATE TABLE mahasiswa (\n  nim TEXT PRIMARY KEY, nama TEXT NOT NULL, jurusan TEXT, fakultas TEXT,\n  tahun_masuk INTEGER, tanggal_lahir TEXT\n);\nINSERT INTO mahasiswa VALUES\n('2023100011','Ayu Pratiwi','Informatika','Sains dan Teknologi',2023,'2005-03-14'),\n('2023100012','Budi Santoso','Sastra Mesin','Teknik',2023,'2004-04-15'),\n('2022100021','Cecep Hidayat','Informatika','Sains dan Teknologi',2022,'2004-01-09'),\n('2022100022','Dinda Maharani','Akuntansi','Ekonomi',2022,NULL),\n('2024100031','Euis Nurhayati','Sastra Mesin','Teknik',2024,'2006-07-21'),\n('2024100032','Fajar Ramadhan','Akuntansi','Ekonomi',2024,'2005-11-30'),\n('2021100041','Gilang Permana','Informatika','Sains dan Teknologi',2021,'2003-05-02'),\n('2023100013','Asri Kurnia','Sistem Informasi','Sains dan Teknologi',2023,'2005-09-18'),\n('2024100033','Hana Salsabila','Sistem Informasi','Sains dan Teknologi',2024,NULL),\n('2022100023','Jihan Aulia','Informatika','Sains dan Teknologi',2022,'2004-12-25');\nCREATE TABLE matakuliah (kode_mk TEXT PRIMARY KEY, nama_mk TEXT NOT NULL, sks INTEGER);\nINSERT INTO matakuliah VALUES ('BD01','Basis Data',3),('AL01','Algoritma',3),('JK01','Jaringan Komputer',3),('MM01','Multimedia Dasar',2);\nCREATE TABLE nilai (id INTEGER PRIMARY KEY, nim TEXT, kode_mk TEXT, nilai INTEGER);\nINSERT INTO nilai (nim,kode_mk,nilai) VALUES\n('2023100011','BD01',88),('2023100011','AL01',91),('2023100011','JK01',79),\n('2023100012','BD01',75),('2023100012','MM01',83),\n('2022100021','BD01',64),('2022100021','AL01',70),('2022100021','JK01',68),\n('2022100022','BD01',92),('2022100022','AL01',85),\n('2024100031','BD01',81),('2024100031','MM01',90),\n('2024100032','BD01',70),('2024100032','JK01',74),\n('2021100041','BD01',59),('2021100041','AL01',77),\n('2023100013','BD01',86),('2023100013','MM01',88),\n('2024100033','BD01',78),\n('9999999999','BD01',55);\n"};</script><script>(function(){
+'use strict';
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const slides=$$('.slide'), stage=$('#stage');
+let cur=0;
+
+/* ---------- layout & navigation ---------- */
+function fit(){const s=Math.min(innerWidth/1280,innerHeight/720);stage.style.transform='scale('+s+')';}
+addEventListener('resize',fit);fit();
+function update(){
+  $('#prog').style.width=((cur+1)/slides.length*100)+'%';
+  $('#ctr').textContent=(cur+1)+' / '+slides.length;
+  const n=slides[cur].dataset;
+  $('#notes .c').innerHTML=(n.min?'<b>Alokasi: '+esc(n.min)+'</b><br>':'')+(n.notes||'<i>Tidak ada catatan untuk slide ini.</i>');
+  $$('#overview button').forEach((b,i)=>b.classList.toggle('cur',i===cur));
+}
+function show(i,dir){
+  i=Math.max(0,Math.min(slides.length-1,i));
+  slides[cur].classList.remove('on');cur=i;const s=slides[cur];s.classList.add('on');
+  $$('.frag',s).forEach(f=>f.classList.toggle('vis',dir<0));
+  update();enter(s);
+  try{history.replaceState(null,'','#'+(cur+1));}catch(e){}
+}
+function next(){const f=$$('.frag:not(.vis)',slides[cur]);if(f.length){f[0].classList.add('vis');return;}show(cur+1,1);}
+function prev(){const f=$$('.frag.vis',slides[cur]);if(f.length){f[f.length-1].classList.remove('vis');return;}show(cur-1,-1);}
+const typing=el=>el&&(el.tagName==='INPUT'||el.tagName==='TEXTAREA'||el.tagName==='SELECT'||el.isContentEditable);
+addEventListener('keydown',e=>{
+  if(e.key==='Escape'){$$('.panel').forEach(p=>p.classList.remove('vis'));document.activeElement&&document.activeElement.blur();return;}
+  if(typing(e.target)||e.ctrlKey||e.metaKey||e.altKey)return;
+  const k=e.key;
+  if(k==='ArrowRight'||k==='PageDown'||k===' '){e.preventDefault();next();}
+  else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+  else if(k==='Home')show(0,1); else if(k==='End')show(slides.length-1,1);
+  else if(k==='f'||k==='F')fs(); else if(k==='n'||k==='N')tog('#notes');
+  else if(k==='o'||k==='O')tog('#overview'); else if(k==='t'||k==='T')tog('#timerbox');
+  else if(k==='r'||k==='R')tog('#picker');
+});
+let tx=null;
+stage.addEventListener('pointerdown',e=>{tx=(e.target.closest('button,input,textarea,select,a,.card,[contenteditable]'))?null:e.clientX;});
+stage.addEventListener('pointerup',e=>{if(tx===null)return;const d=e.clientX-tx;if(Math.abs(d)>70){d<0?next():prev();}tx=null;});
+function fs(){if(!document.fullscreenElement)document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();else document.exitFullscreen();}
+function tog(id){$(id).classList.toggle('vis');}
+$('#b-prev').onclick=prev;$('#b-next').onclick=next;$('#b-fs').onclick=fs;
+$('#b-notes').onclick=()=>tog('#notes');$('#b-ov').onclick=()=>tog('#overview');
+$('#b-timer').onclick=()=>tog('#timerbox');$('#b-pick').onclick=()=>tog('#picker');
+$$('.panel .x').forEach(x=>x.onclick=()=>x.closest('.panel').classList.remove('vis'));
+// overview
+const og=$('#overview .grid');
+slides.forEach((s,i)=>{const b=document.createElement('button');b.innerHTML='<b>'+(i+1)+'</b> '+esc(s.dataset.h||'');b.onclick=()=>{show(i,1);tog('#overview');};og.appendChild(b);});
+
+/* ---------- beep ---------- */
+function beep(){try{const a=new (window.AudioContext||window.webkitAudioContext)();[0,.35,.7].forEach(t=>{const o=a.createOscillator(),g=a.createGain();o.frequency.value=880;o.connect(g);g.connect(a.destination);g.gain.setValueAtTime(.2,a.currentTime+t);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+t+.3);o.start(a.currentTime+t);o.stop(a.currentTime+t+.3);});}catch(e){}}
+const mmss=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+function makeTimer(disp,onTick,onDone){let left=0,total=0,h=null;return{
+  set(sec){this.stop();left=total=sec;disp(left,total);},
+  start(){if(h||left<=0)return;h=setInterval(()=>{left--;disp(left,total);if(left<=0){this.stop();beep();onDone&&onDone();}},1000);},
+  stop(){clearInterval(h);h=null;}, running(){return !!h;}};}
+// global timer
+const tb=$('#timerbox'),gt=makeTimer(l=>{$('.t',tb).textContent=mmss(l);},null,()=>tb.classList.add('done'));
+$$('[data-min]',tb).forEach(b=>b.onclick=()=>{tb.classList.remove('done');gt.set(+b.dataset.min*60);gt.start();});
+$('[data-act=pause]',tb).onclick=()=>gt.running()?gt.stop():gt.start();
+// picker
+const pk=$('#picker');let used=[];
+$('[data-act=spin]',pk).onclick=()=>{
+  let names=$('textarea',pk).value.split(/\n|,/).map(s=>s.trim()).filter(Boolean);
+  if($('#pk-uniq').checked)names=names.filter(n=>!used.includes(n));
+  const w=$('.who',pk);if(!names.length){w.textContent='Isi daftar nama dulu';return;}
+  let k=0;const n=RM?1:18;const iv=setInterval(()=>{const pick=names[Math.floor(Math.random()*names.length)];w.textContent=pick;if(++k>=n){clearInterval(iv);used.push(pick);}},70);
+};
+$('[data-act=clear]',pk).onclick=()=>{used=[];$('.who',pk).textContent='';};
+
+/* ---------- per-slide init on enter ---------- */
+const inited=new WeakSet();
+function enter(s){
+  if(s.classList.contains('s-title'))typeTitle(s);
+  if(inited.has(s))return;inited.add(s);
+  $$('.qz',s).forEach(initQuiz);$$('.tally',s).forEach(initTally);$$('.cloudw',s).forEach(initCloud);
+  $$('.ring',s).forEach(initRing);$$('.order',s).forEach(initOrder);$$('.card',s).forEach(c=>c.onclick=()=>c.classList.toggle('flip'));
+  $$('.reveal-btn',s).forEach(b=>b.onclick=()=>{$(b.dataset.t,s).classList.add('vis');b.remove();});
+  $$('.pg',s).forEach(initPG);
+  $$('[data-widget]',s).forEach(w=>{const f=W[w.dataset.widget];f&&f(w);});
+}
+document.addEventListener('click',e=>{const b=e.target.closest('.term .bar button');if(!b)return;const t=$('pre',b.closest('.term')).innerText;navigator.clipboard&&navigator.clipboard.writeText(t).then(()=>{b.textContent='Tersalin';setTimeout(()=>b.textContent='Salin',1200);});});
+
+function typeTitle(s){
+  const q=$('.q .txt',s),res=$('.res',s);if(!q)return;const full=q.dataset.full;
+  if(RM||s.dataset.typed){q.textContent=full;res.classList.add('vis');return;}
+  s.dataset.typed=1;q.textContent='';let i=0;
+  const iv=setInterval(()=>{q.textContent=full.slice(0,++i);if(i>=full.length){clearInterval(iv);setTimeout(()=>res.classList.add('vis'),250);}},38);
+}
+function initQuiz(z){const ans=+z.dataset.ans,why=z.parentElement.querySelector('.why');
+  $$('button',z).forEach((b,i)=>b.onclick=()=>{if(z.dataset.done){return;}
+    if(i===ans){b.classList.add('right');z.dataset.done=1;why&&why.classList.add('vis');}else{b.classList.add('wrong');}});
+  const r=z.parentElement.querySelector('.show-ans');r&&(r.onclick=()=>{$$('button',z)[ans].classList.add('right');z.dataset.done=1;why&&why.classList.add('vis');});}
+function initTally(t){const rows=$$('.row',t);const cnt=rows.map(()=>0);
+  const draw=()=>{const m=Math.max(1,...cnt);rows.forEach((r,i)=>{$('.fill',r).style.width=(cnt[i]/m*100)+'%';$('.n',r).textContent=cnt[i];});};
+  rows.forEach((r,i)=>{$('button',r).onclick=()=>{cnt[i]++;draw();};$('.bar',r).oncontextmenu=e=>{e.preventDefault();cnt[i]=Math.max(0,cnt[i]-1);draw();};});}
+function initCloud(w){const box=$('.cloud',w),inp=$('input',w),words={};
+  const draw=()=>{const m=Math.max(1,...Object.values(words));box.innerHTML=Object.entries(words).sort((a,b)=>b[1]-a[1]).map(([k,v])=>'<span style="font-size:'+(20+v/m*30)+'px;opacity:'+(.55+v/m*.45)+'">'+esc(k)+'</span>').join('')||'<span class="xs">Kata dari mahasiswa akan muncul di sini.</span>';};
+  const add=()=>{inp.value.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean).forEach(k=>words[k]=(words[k]||0)+1);inp.value='';draw();};
+  $('button',w).onclick=add;inp.onkeydown=e=>{if(e.key==='Enter')add();};draw();}
+function initRing(r){const sec=+r.dataset.sec,c=$('circle.fg',r),L=2*Math.PI*92;c.style.strokeDasharray=L;
+  const tm=makeTimer((l,t)=>{$('.t',r).textContent=mmss(l);c.style.strokeDashoffset=L*(1-l/t);});tm.set(sec);
+  const ctl=r.nextElementSibling;$('[data-a=go]',ctl).onclick=e=>{tm.running()?(tm.stop(),e.target.textContent='Lanjut'):(tm.start(),e.target.textContent='Jeda');};
+  $('[data-a=reset]',ctl).onclick=()=>{tm.set(sec);$('[data-a=go]',ctl).textContent='Mulai';};}
+function initOrder(o){const items=JSON.parse(o.dataset.items),pool=$('.pool',o),ans=$('.ans',o),res=$('.ordres',o);
+  const reset=()=>{pool.innerHTML='';ans.innerHTML='';res.textContent='';items.map((t,i)=>[t,i]).sort(()=>Math.random()-.5).forEach(([t,i])=>{const b=document.createElement('button');b.className='tok';b.textContent=t;b.dataset.i=i;b.onclick=()=>{(b.parentElement===pool?ans:pool).appendChild(b);};pool.appendChild(b);});};
+  $('[data-a=check]',o).onclick=()=>{const got=$$('.tok',ans).map(b=>+b.dataset.i);const ok=got.length===items.length&&got.every((v,i)=>v===i);res.textContent=ok?'Urutan benar. Mantap!':'Belum tepat. Coba lagi — perhatikan urutan eksekusi.';res.style.color=ok?'var(--ok)':'var(--pen)';};
+  $('[data-a=reset]',o).onclick=reset;$('[data-a=solve]',o).onclick=()=>{ans.innerHTML='';pool.innerHTML='';items.forEach((t,i)=>{const b=document.createElement('button');b.className='tok';b.textContent=t;b.dataset.i=i;ans.appendChild(b);});res.textContent='';};reset();}
+
+/* ---------- SQL playground (sql.js / SQLite) ---------- */
+let SQLP=null,DB=null;
+function loadSQL(){if(SQLP)return SQLP;SQLP=new Promise((res,rej)=>{
+  const src=[['https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/','sql-wasm.js'],['https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/','sql-wasm.js']];let k=0;
+  const nx=()=>{if(k>=src.length){rej(new Error('offline'));return;}const [b,f]=src[k++];const sc=document.createElement('script');sc.src=b+f;
+    sc.onload=()=>window.initSqlJs({locateFile:x=>b+x}).then(res,nx);sc.onerror=nx;document.head.appendChild(sc);};nx();});return SQLP;}
+function freshDB(S){DB=new S.Database();DB.run('PRAGMA foreign_keys=OFF;');DB.exec(window.DECK.seed||'');}
+function tableHTML(r){return '<table class="tbl"><tr>'+r.columns.map(c=>'<th>'+esc(c)+'</th>').join('')+'</tr>'+r.values.map(v=>'<tr>'+v.map(x=>x===null?'<td class="null">NULL</td>':'<td>'+esc(x)+'</td>').join('')+'</tr>').join('')+'</table><div class="rows-note">'+r.values.length+' row'+(r.values.length===1?'':'s')+' in set</div>';}
+function initPG(pg){const ta=$('textarea',pg),out=$('.out',pg),st=$('.stat',pg);
+  st.textContent='Memuat mesin SQL (SQLite di browser)…';
+  loadSQL().then(S=>{if(!DB)freshDB(S);st.textContent='Siap. Ctrl+Enter untuk menjalankan.';pg._S=S;})
+    .catch(()=>{st.textContent='Mesin SQL butuh internet. Tanpa internet, jalankan query yang sama di XAMPP (mysql -u root).';});
+  const run=()=>{if(!DB){st.textContent='Mesin SQL belum siap.';return;}const sql=ta.value.trim();if(!sql)return;
+    try{const t0=performance.now();const rs=DB.exec(sql);const ms=((performance.now()-t0)/1000).toFixed(3);
+      out.innerHTML=rs.length?rs.map(tableHTML).join('<br>'):'<div class="resp ok">Query OK, '+DB.getRowsModified()+' row(s) affected</div>';st.textContent='Selesai ('+ms+' sec)';}
+    catch(e){out.innerHTML='<div class="err">ERROR: '+esc(e.message)+'</div><div class="xs" style="margin-top:8px">Cek ejaan tabel/kolom, tanda kutip, dan titik koma. Ingat: playground memakai dialek SQLite.</div>';}};
+  $('[data-a=run]',pg).onclick=run;ta.onkeydown=e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();run();}};
+  $('[data-a=reset]',pg).onclick=()=>{if(pg._S){freshDB(pg._S);out.innerHTML='<div class="resp ok">Data dikembalikan ke kondisi awal.</div>';}};
+  $('[data-a=tables]',pg).onclick=()=>{ta.value="SELECT name AS tabel, sql AS struktur FROM sqlite_master WHERE type IN ('table','view');";run();};
+  $$('.chips button',pg).forEach(b=>b.onclick=()=>{ta.value=b.dataset.q;ta.focus();});}
+
+/* ---------- widgets ---------- */
+const W={};
+const MHS=[['101','Ayu'],['102','Budi'],['103','Cecep'],['104','Dinda']];
+const NIL=[['101','Basis Data',88],['102','Basis Data',75],['101','Jarkom',90],['105','Basis Data',70]];
+W.join=w=>{
+  const venn=$('.venn',w),out=$('.jout',w),sqlb=$('.jsql',w),L=$$('tr',$('.jl',w)).slice(1),R=$$('tr',$('.jr',w)).slice(1);
+  const col={INNER:['#fff','#FFE45C','#fff'],LEFT:['#FFE45C','#FFE45C','#fff'],RIGHT:['#fff','#FFE45C','#FFE45C'],FULL:['#FFE45C','#FFE45C','#FFE45C']};
+  const sqls={INNER:'SELECT m.nim, m.nama, n.mk, n.nilai\nFROM mahasiswa m\nINNER JOIN nilai n ON m.nim = n.nim;',
+    LEFT:'SELECT m.nim, m.nama, n.mk, n.nilai\nFROM mahasiswa m\nLEFT JOIN nilai n ON m.nim = n.nim;',
+    RIGHT:'SELECT n.nim, m.nama, n.mk, n.nilai\nFROM mahasiswa m\nRIGHT JOIN nilai n ON m.nim = n.nim;',
+    FULL:'-- MySQL/MariaDB tidak punya FULL OUTER JOIN\nSELECT m.nim, m.nama, n.mk, n.nilai FROM mahasiswa m LEFT JOIN nilai n ON m.nim=n.nim\nUNION\nSELECT n.nim, m.nama, n.mk, n.nilai FROM mahasiswa m RIGHT JOIN nilai n ON m.nim=n.nim;'};
+  function go(t){$$('.wg-btns button',w).forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+    const [a,b2,c]=col[t];$('.va',venn).setAttribute('fill',a);$('.vb',venn).setAttribute('fill',c);$('.vab',venn).setAttribute('fill',b2);
+    let rows=[];const mset=new Set(MHS.map(m=>m[0])),nset=new Set(NIL.map(n=>n[0]));
+    if(t!=='RIGHT')MHS.forEach(m=>{const ms=NIL.filter(n=>n[0]===m[0]);if(ms.length)ms.forEach(n=>rows.push([m[0],m[1],n[1],n[2]]));else if(t!=='INNER')rows.push([m[0],m[1],null,null]);});
+    if(t==='RIGHT')NIL.forEach(n=>{const m=MHS.find(x=>x[0]===n[0]);rows.push([n[0],m?m[1]:null,n[1],n[2]]);});
+    if(t==='FULL')NIL.filter(n=>!mset.has(n[0])).forEach(n=>rows.push([n[0],null,n[1],n[2]]));
+    L.forEach((r,i)=>{const on=t==='INNER'||t==='RIGHT'?nset.has(MHS[i][0]):true;r.className=on?'hit':'dim';});
+    R.forEach((r,i)=>{const on=t==='INNER'||t==='LEFT'?mset.has(NIL[i][0]):true;r.className=on?'hit':'dim';});
+    out.innerHTML=tableHTML({columns:['nim','nama','mk','nilai'],values:rows});sqlb.innerHTML=hl(sqls[t]);}
+  $$('.wg-btns button',w).forEach(b=>b.onclick=()=>go(b.dataset.t));go('INNER');};
+function hl(s){return esc(s).replace(/(--.*)$/gm,'<span class="cm">$1</span>').replace(/\b(SELECT|FROM|WHERE|INNER|LEFT|RIGHT|JOIN|ON|UNION|GROUP BY|HAVING|ORDER BY|AS|UPDATE|SET|INSERT|INTO|VALUES|GRANT|REVOKE|TO|CREATE|TABLE|PRIMARY KEY|NOT NULL|AND|CASE|WHEN|THEN|ELSE|END|CHAR|VARCHAR|INT|DATE|DECIMAL|BOOLEAN|TEXT|USING|AVG|COUNT|SUM|MIN|MAX)\b/g,'<span class="kw">$1</span>');}
+W.hl=hl;
+W.groupby=w=>{
+  const data=[['Ayu','Informatika',88],['Budi','Sastra Mesin',75],['Cecep','Informatika',64],['Dinda','Akuntansi',91],['Euis','Sastra Mesin',82],['Fajar','Akuntansi',70],['Gilang','Informatika',79]];
+  const box=$('.gout',w),sqlb=$('.gsql',w),fn=$('select',w),hv=$('input[type=range]',w),hvv=$('.hvv',w);let grouped=false;
+  const agg=(f,a)=>f==='COUNT'?a.length:f==='SUM'?a.reduce((x,y)=>x+y,0):f==='MAX'?Math.max(...a):f==='MIN'?Math.min(...a):Math.round(a.reduce((x,y)=>x+y,0)/a.length*100)/100;
+  function draw(){const f=fn.value,th=+hv.value;hvv.textContent=th?('HAVING '+f+'(nilai) > '+th):'(tanpa HAVING)';
+    if(!grouped){box.innerHTML='<table class="tbl"><tr><th>nama</th><th>jurusan</th><th>nilai</th></tr>'+data.map(d=>'<tr><td>'+d[0]+'</td><td>'+d[1]+'</td><td>'+d[2]+'</td></tr>').join('')+'</table><div class="rows-note">'+data.length+' rows in set</div>';
+      sqlb.innerHTML=hl('SELECT nama, jurusan, nilai\nFROM nilai_mhs;');return;}
+    const js=[...new Set(data.map(d=>d[1]))];
+    let html='<table class="tbl"><tr><th>jurusan</th><th>anggota</th><th>'+f+'(nilai)</th></tr>';let shown=0;
+    js.forEach((j,gi)=>{const v=data.filter(d=>d[1]===j);const a=agg(f,v.map(d=>d[2]));const pass=!th||a>th;if(pass)shown++;
+      html+='<tr class="grp-'+gi+(pass?'':' dim')+'"><td>'+j+'</td><td class="xs">'+v.map(d=>d[0]+' ('+d[2]+')').join(', ')+'</td><td><b>'+a+'</b></td></tr>';});
+    box.innerHTML=html+'</table><div class="rows-note">'+shown+' rows in set'+(th?' — baris redup tersaring HAVING':'')+'</div>';
+    sqlb.innerHTML=hl('SELECT jurusan, '+f+'(nilai)\nFROM nilai_mhs\nGROUP BY jurusan'+(th?'\nHAVING '+f+'(nilai) > '+th:'')+';');}
+  $('[data-a=g]',w).onclick=e=>{grouped=!grouped;e.target.textContent=grouped?'Lepas GROUP BY':'Terapkan GROUP BY jurusan';draw();};
+  fn.onchange=draw;hv.oninput=draw;draw();};
+W.pivot=w=>{
+  const longR=[[2022,'Basis Data',80],[2022,'Jarkom',77],[2023,'Basis Data',85],[2023,'Jarkom',72],[2024,'Basis Data',79],[2024,'Jarkom',88]];
+  const box=$('.pout',w),sqlb=$('.psql',w);let wide=false;
+  function draw(){if(!wide){box.innerHTML=tableHTML({columns:['tahun_masuk','matakuliah','rata2'],values:longR});
+      sqlb.innerHTML=hl('SELECT tahun_masuk, matakuliah, AVG(nilai) AS rata2\nFROM nilai JOIN mahasiswa USING (nim)\nGROUP BY tahun_masuk, matakuliah;');}
+    else{const ys=[...new Set(longR.map(r=>r[0]))];box.innerHTML=tableHTML({columns:['tahun_masuk','Basis Data','Jarkom'],values:ys.map(y=>[y,longR.find(r=>r[0]===y&&r[1]==='Basis Data')[2],longR.find(r=>r[0]===y&&r[1]==='Jarkom')[2]])});
+      sqlb.innerHTML=hl("SELECT tahun_masuk,\n  AVG(CASE WHEN matakuliah='Basis Data' THEN nilai END) AS `Basis Data`,\n  AVG(CASE WHEN matakuliah='Jarkom' THEN nilai END) AS `Jarkom`\nFROM nilai JOIN mahasiswa USING (nim)\nGROUP BY tahun_masuk;");}}
+  $('[data-a=p]',w).onclick=e=>{wide=!wide;e.target.textContent=wide?'Kembali ke format panjang':'Putar jadi crosstab';draw();};draw();};
+W.trigger=w=>{
+  const rows=[['2023100011','Basis Data',78],['2023100012','Basis Data',84]];let log=[],id=0;
+  const tbN=$('.tn',w),tbL=$('.tl',w),sel=$('select',w),inp=$('.num-in',w),sqlb=$('.tsql',w),steps=$$('.st8',w),guard=$('#tg-guard',w);
+  function draw(){tbN.innerHTML=tableHTML({columns:['nim','matakuliah','nilai'],values:rows});
+    tbL.innerHTML=log.length?tableHTML({columns:['log_id','nim','nilai_lama','nilai_baru','waktu'],values:log}):'<div class="xs">Log_Nilai masih kosong.</div>';}
+  $('[data-a=u]',w).onclick=()=>{const i=+sel.value,nv=+inp.value;if(isNaN(nv))return;const old=rows[i][2];
+    sqlb.innerHTML=hl("UPDATE nilai SET nilai = "+nv+" WHERE nim = '"+rows[i][0]+"';");
+    steps.forEach(s=>s.classList.remove('lit'));
+    const seq=[()=>{steps[0].classList.add('lit');rows[i][2]=nv;draw();},()=>steps[1].classList.add('lit'),()=>{
+      if(guard.checked&&old===nv){steps[2].textContent='IF: nilai sama → tidak dicatat';steps[2].classList.add('lit');return;}
+      steps[2].textContent='INSERT INTO log_nilai';steps[2].classList.add('lit');const d=new Date();log.push([++id,rows[i][0],old,nv,d.toTimeString().slice(0,8)]);draw();}];
+    seq.forEach((f,k)=>setTimeout(f,RM?0:k*550));};
+  draw();};
+W.dcl=w=>{
+  const privs=['SELECT','INSERT','UPDATE','DELETE'];const have={SELECT:false,INSERT:false,UPDATE:false,DELETE:false};
+  const out=$('.dsql',w),resp=$('.dresp',w),scope=$('select',w);
+  $$('.matrix input',w).forEach(c=>c.onchange=()=>{const p=c.dataset.p;have[p]=c.checked;const tgt=scope.value;
+    out.innerHTML=hl((c.checked?'GRANT '+p+' ON '+tgt+' TO ':'REVOKE '+p+' ON '+tgt+' FROM ')+"'praktikan'@'localhost';");resp.className='resp';resp.textContent='';});
+  $$('[data-try]',w).forEach(b=>b.onclick=()=>{const p=b.dataset.try;
+    resp.className='resp '+(have[p]?'ok':'no');
+    resp.textContent=have[p]?('praktikan> '+b.dataset.q+'\nQuery OK — hak '+p+' dimiliki.'):('praktikan> '+b.dataset.q+"\nERROR 1142 (42000): "+p+" command denied to user 'praktikan'@'localhost' for table 'mahasiswa'");});};
+W.ddl=w=>{
+  const cols=[['nim','CHAR','10',true,true],['nama','VARCHAR','100',false,true]];
+  const out=$('.dsql',w),prev=$('.dprev',w),f=$('.form-row',w);
+  function draw(){const lines=cols.map(c=>'  '+c[0]+' '+c[1]+(c[2]&&!['INT','DATE','BOOLEAN','TEXT'].includes(c[1])?'('+c[2]+')':'')+(c[4]&&!c[3]?' NOT NULL':''));
+    const pk=cols.filter(c=>c[3]).map(c=>c[0]);if(pk.length)lines.push('  PRIMARY KEY ('+pk.join(', ')+')');
+    out.innerHTML=hl('CREATE TABLE mahasiswa (\n'+lines.join(',\n')+'\n);');
+    prev.innerHTML='<table class="tbl"><tr>'+cols.map(c=>'<th'+(c[3]?' class="pk"':'')+'>'+esc(c[0])+'</th>').join('')+'</tr><tr>'+cols.map(c=>'<td class="xs">'+c[1]+'</td>').join('')+'</tr></table>';}
+  $('[data-a=add]',f).onclick=()=>{const n=$('.cn',f).value.trim().replace(/\s+/g,'_');if(!n)return;cols.push([n,$('.ct',f).value,$('.cl',f).value.trim(),$('.cp',f).checked,$('.cnn',f).checked]);$('.cn',f).value='';draw();};
+  $('[data-a=undo]',f).onclick=()=>{if(cols.length>1)cols.pop();draw();};draw();};
+
+update();
+const h=parseInt(location.hash.slice(1));show(isNaN(h)?0:h-1,1);
+})();
+</script><script src="shared/config.js"></script><script src="shared/tracking.js"></script></body></html>

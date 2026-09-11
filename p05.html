@@ -1,0 +1,444 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>P5 Data Definition Language — GHK2AAB3 Basis Data</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&family=Caveat:wght@600&display=swap" rel="stylesheet"><style>:root{
+  --paper:#F4F7FB; --grid:#DFE6F1; --ink:#1B2A4A; --ink2:#50607F; --key:#2F5BEA; --key2:#DCE5FF;
+  --hl:#FFE45C; --pen:#D23A33; --ok:#15916A; --okbg:#DDF4EA; --bad:#C8352E; --badbg:#FBE3E1;
+  --term:#13203B; --termtx:#E4EBF6; --fk:#8A4FD8;
+  --sans:'Plus Jakarta Sans',system-ui,'Segoe UI',Roboto,sans-serif;
+  --mono:'JetBrains Mono',Consolas,'Courier New',monospace;
+  --hand:'Caveat','Comic Sans MS',cursive;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#1B2A4A;font-family:var(--sans);-webkit-font-smoothing:antialiased}
+#app{position:fixed;inset:0;display:grid;place-items:center;overflow:hidden}
+#stage{width:1280px;height:720px;position:relative;flex:none}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;padding:50px 72px 58px;color:var(--ink);
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:32px 32px;background-position:-1px -1px;overflow:hidden;font-size:24px;line-height:1.45}
+.slide.on{display:flex}
+.slide::before{content:"";position:absolute;left:0;top:0;bottom:0;width:10px;background:var(--key)}
+.slide.k-act::before{background:var(--hl)} .slide.k-quiz::before{background:var(--fk)} .slide.k-bug::before{background:var(--pen)} .slide.k-play::before{background:var(--ok)}
+.hd{display:flex;justify-content:space-between;align-items:baseline;font-size:16px;color:var(--ink2);margin-bottom:14px;font-weight:600}
+.hd .tag{display:inline-flex;gap:10px;align-items:center}
+.hd .tag b{background:var(--ink);color:#fff;padding:2px 10px;border-radius:4px;font-weight:700}
+.hd .kind{font-weight:600}
+h1,h2,h3{margin:0;letter-spacing:-.02em;line-height:1.1}
+h2{font-size:44px;font-weight:800;margin-bottom:14px;max-width:26ch}
+h3{font-size:26px;font-weight:700;margin:0 0 8px}
+.lead{font-size:25px;color:var(--ink2);margin:0 0 16px;max-width:52ch}
+p{margin:0 0 12px;max-width:56ch}
+mark{background:linear-gradient(100deg,transparent 2%,var(--hl) 4%,var(--hl) 96%,transparent 98%);color:inherit;padding:0 .15em;border-radius:3px}
+code{font-family:var(--mono);font-size:.86em;background:#E6ECF7;padding:1px 6px;border-radius:4px}
+.body{flex:1;min-height:0;display:flex;flex-direction:column}
+.cols{display:grid;grid-template-columns:1.05fr 1fr;gap:40px;flex:1;min-height:0;align-items:start}
+.cols.wide-l{grid-template-columns:1.4fr 1fr}.cols.wide-r{grid-template-columns:1fr 1.35fr}
+ul.pts{list-style:none;margin:0 0 10px;padding:0;max-width:56ch}
+ul.pts li{position:relative;padding-left:30px;margin:0 0 10px}
+ul.pts li::before{content:"";position:absolute;left:4px;top:.5em;width:12px;height:12px;background:var(--key);border-radius:2px}
+ul.pts li b{color:var(--ink)}
+ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;max-width:58ch}
+ol.steps li{counter-increment:s;position:relative;padding-left:48px;margin:0 0 12px}
+ol.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:34px;height:34px;border-radius:50%;background:var(--ink);color:#fff;font-weight:800;font-size:18px;display:grid;place-items:center}
+.pen{font-family:var(--hand);color:var(--pen);font-size:30px;line-height:1.15;transform:rotate(-1.2deg);border-left:3px solid var(--pen);padding:4px 0 4px 14px;margin:6px 0 10px;max-width:40ch}
+.pen small{display:block;font-family:var(--sans);font-size:15px;color:var(--pen);font-weight:700;transform:none;margin-bottom:2px}
+.box{background:#fff;border:2px solid var(--ink);border-radius:10px;padding:16px 20px;box-shadow:5px 5px 0 var(--ink)}
+.box.soft{border-color:#C9D4E6;box-shadow:none}
+.box h3{font-size:22px}
+.tip{background:var(--key2);border-radius:8px;padding:12px 16px;font-size:20px;margin-top:8px}
+.small{font-size:19px}.xs{font-size:16px;color:var(--ink2)}
+.chip{display:inline-block;font-size:16px;font-weight:700;padding:3px 12px;border-radius:999px;background:var(--ink);color:#fff;margin-right:6px}
+.chip.y{background:var(--hl);color:var(--ink)}.chip.g{background:var(--ok)}.chip.p{background:var(--fk)}.chip.r{background:var(--pen)}
+/* terminal */
+.term{background:var(--term);color:var(--termtx);border-radius:10px;overflow:hidden;font-family:var(--mono);font-size:19px;line-height:1.5;box-shadow:0 0 0 2px var(--ink)}
+.term .bar{display:flex;justify-content:space-between;align-items:center;background:#0C1629;color:#8FA3C6;font-size:14px;padding:6px 12px;font-family:var(--sans);font-weight:600}
+.term .bar button{font:inherit;background:transparent;color:#BFD0EE;border:1px solid #33476E;border-radius:5px;padding:2px 10px;cursor:pointer}
+.term pre{margin:0;padding:14px 18px;white-space:pre-wrap;word-break:break-word}
+.term.sm{font-size:16px}.term.lg{font-size:22px}
+.kw{color:#7FB4FF;font-weight:700}.st{color:#9FE3A8}.nu{color:#FFC978}.cm{color:#7C8DAE;font-style:italic}.fn{color:#F59CD6}.pr{color:#6F86B0}
+/* tables */
+table.tbl{border-collapse:collapse;font-size:19px;background:#fff;box-shadow:0 0 0 2px var(--ink);border-radius:6px;overflow:hidden;font-variant-numeric:tabular-nums}
+table.tbl th{background:var(--ink);color:#fff;text-align:left;padding:7px 14px;font-weight:700}
+table.tbl td{padding:6px 14px;border-top:1px solid #D6DEEB}
+table.tbl tr:nth-child(even) td{background:#F6F8FC}
+table.tbl td.null{color:#98A6BF;font-style:italic}
+table.tbl .pk{text-decoration:underline;text-underline-offset:3px}
+.rows-note{font-family:var(--mono);font-size:14px;color:var(--ink2);margin-top:6px}
+/* fragments */
+.frag{opacity:0;transform:translateY(8px);transition:opacity .35s,transform .35s}
+.frag.vis{opacity:1;transform:none}
+svg .frag{transform:none}
+/* title */
+.s-title{padding:0;background-size:32px 32px}
+.s-title .tw{padding:64px 88px;display:flex;flex-direction:column;height:100%}
+.s-title .course{font-size:20px;font-weight:700;color:var(--ink2)}
+.s-title .q{margin-top:40px;font-family:var(--mono);font-size:26px;background:var(--term);color:var(--termtx);padding:14px 22px;border-radius:10px;align-self:flex-start;min-width:760px}
+.s-title .q .cur{display:inline-block;width:.6em;background:var(--hl);animation:blink 1s steps(1) infinite;color:transparent}
+@keyframes blink{50%{opacity:0}}
+.s-title .res{margin-top:26px;opacity:0;transition:opacity .5s}
+.s-title .res.vis{opacity:1}
+.s-title .no{font-size:24px;font-weight:800;color:var(--key)}
+.s-title h1{font-size:76px;font-weight:800;letter-spacing:-.035em;max-width:17ch;margin:6px 0 12px}
+.s-title .sub{font-size:26px;color:var(--ink2);max-width:48ch}
+.s-title .meta{margin-top:auto;display:flex;gap:28px;font-size:18px;color:var(--ink2);font-weight:600}
+.s-title .meta span b{color:var(--ink)}
+.s-title .rows-note{font-size:16px;margin-top:10px}
+/* quiz */
+.qz{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px}
+.qz button{font:inherit;font-size:22px;text-align:left;background:#fff;border:2px solid var(--ink);border-radius:10px;padding:14px 18px 14px 58px;cursor:pointer;position:relative;color:var(--ink);min-height:74px}
+.qz button::before{content:attr(data-l);position:absolute;left:14px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:6px;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:800;font-size:17px}
+.qz button:hover{background:#F0F4FF}
+.qz button.right{background:var(--okbg);border-color:var(--ok)}.qz button.right::before{background:var(--ok)}
+.qz button.wrong{background:var(--badbg);border-color:var(--bad)}.qz button.wrong::before{background:var(--bad)}
+.qz button code{font-size:.82em}
+.why{margin-top:14px;font-size:20px;background:#fff;border-left:6px solid var(--ok);padding:10px 16px;border-radius:6px;display:none;max-width:none}
+.why.vis{display:block}
+.qq{font-size:32px;font-weight:700;line-height:1.25;margin:0 0 14px;max-width:44ch}
+/* poll */
+.plat{display:flex;gap:14px;align-items:center;margin:6px 0 14px;font-size:20px}
+.plat .code{font-family:var(--mono);font-weight:700;background:#fff;border:2px dashed var(--ink);padding:4px 14px;border-radius:8px;min-width:140px;outline:none}
+.tally{display:flex;flex-direction:column;gap:10px}
+.tally .row{display:grid;grid-template-columns:1fr 44px 48px;gap:10px;align-items:center;font-size:20px}
+.tally .bar{height:34px;background:#fff;border:2px solid var(--ink);border-radius:6px;position:relative;overflow:hidden}
+.tally .fill{position:absolute;inset:0 auto 0 0;width:0;background:var(--key);transition:width .3s}
+.tally .lbl{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-weight:700;mix-blend-mode:difference;color:#fff}
+.tally button,.btn{font:inherit;font-size:18px;font-weight:700;background:var(--ink);color:#fff;border:none;border-radius:8px;padding:8px 16px;cursor:pointer}
+.btn.ghost{background:#fff;color:var(--ink);border:2px solid var(--ink)}
+.btn.ok{background:var(--ok)}.btn.y{background:var(--hl);color:var(--ink)}
+.btn:focus-visible,.qz button:focus-visible,button:focus-visible{outline:3px solid var(--hl);outline-offset:2px}
+.cloud{min-height:180px;display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;align-content:flex-start;background:#fff;border:2px solid var(--ink);border-radius:10px;padding:14px}
+.cloud span{font-weight:800;color:var(--ink);line-height:1}
+.cloud-in{display:flex;gap:8px;margin-top:10px}
+.cloud-in input{flex:1;font:inherit;font-size:20px;padding:6px 12px;border:2px solid var(--ink);border-radius:8px}
+/* activity */
+.ring{width:210px;height:210px;position:relative;display:grid;place-items:center}
+.ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.ring .t{font-family:var(--mono);font-size:44px;font-weight:700}
+.ring-ctl{display:flex;gap:8px;margin-top:12px;justify-content:center}
+.actwrap{display:grid;grid-template-columns:1fr 260px;gap:36px;align-items:start}
+/* order game */
+.pool,.ans{display:flex;flex-wrap:wrap;gap:10px;min-height:62px;padding:10px;border-radius:10px}
+.pool{background:#fff;border:2px dashed #9FB0CC}.ans{background:var(--key2);border:2px solid var(--key)}
+.tok{font-family:var(--mono);font-size:20px;font-weight:700;background:var(--term);color:var(--termtx);border:none;border-radius:6px;padding:8px 14px;cursor:pointer}
+.ordres{margin-top:12px;font-weight:700;font-size:22px}
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{perspective:800px;height:150px;cursor:pointer;background:none;border:none;padding:0;font:inherit}
+.card .in{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.card.flip .in{transform:rotateY(180deg)}
+.card .f,.card .b{position:absolute;inset:0;backface-visibility:hidden;border-radius:10px;display:grid;place-items:center;padding:12px;text-align:center}
+.card .f{background:#fff;border:2px solid var(--ink);font-weight:800;font-size:24px;box-shadow:4px 4px 0 var(--ink);color:var(--ink)}
+.card .b{background:var(--ink);color:#fff;transform:rotateY(180deg);font-size:18px;line-height:1.35}
+/* playground */
+.pg{display:grid;grid-template-columns:1fr 1fr;gap:20px;flex:1;min-height:0}
+.pg textarea{width:100%;height:190px;font-family:var(--mono);font-size:18px;background:var(--term);color:var(--termtx);border:none;border-radius:10px;padding:14px;resize:none;box-shadow:0 0 0 2px var(--ink)}
+.pg .ctl{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap;align-items:center}
+.pg .chips{display:flex;flex-wrap:wrap;gap:8px}
+.pg .chips button{font-family:var(--mono);font-size:14px;background:#fff;border:1.5px solid var(--ink);border-radius:6px;padding:4px 10px;cursor:pointer;text-align:left;color:var(--ink)}
+.pg .out{background:#fff;border:2px solid var(--ink);border-radius:10px;padding:10px;overflow:auto;max-height:430px;font-size:17px}
+.pg .out table.tbl{font-size:16px;box-shadow:none}
+.pg .stat{font-size:15px;color:var(--ink2);font-family:var(--mono)}
+.pg .err{color:var(--bad);font-family:var(--mono);font-size:16px;white-space:pre-wrap}
+/* widgets */
+.wg-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.wg-btns button.on{background:var(--key)}
+.venn circle{transition:fill .3s}
+tr.hit td{background:#FFF6C2 !important}
+tr.dim td{opacity:.35}
+.grp-0 td:first-child{box-shadow:inset 6px 0 0 #2F5BEA}.grp-1 td:first-child{box-shadow:inset 6px 0 0 #15916A}.grp-2 td:first-child{box-shadow:inset 6px 0 0 #8A4FD8}.grp-3 td:first-child{box-shadow:inset 6px 0 0 #E2A200}
+.flow{display:flex;align-items:center;gap:10px;margin:10px 0 14px;flex-wrap:wrap}
+.flow .st8{padding:8px 14px;border:2px solid var(--ink);border-radius:8px;background:#fff;font-weight:700;font-size:18px;transition:background .3s,color .3s}
+.flow .st8.lit{background:var(--hl)}
+.flow .arr{font-weight:800;color:var(--ink2)}
+.num-in{width:90px;font:inherit;font-size:18px;padding:2px 6px;border:2px solid var(--ink);border-radius:6px}
+.form-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:18px;margin-bottom:10px}
+.form-row input[type=text],.form-row select{font:inherit;font-size:18px;padding:4px 8px;border:2px solid var(--ink);border-radius:6px;background:#fff}
+.matrix td,.matrix th{text-align:center}
+.matrix input{width:22px;height:22px;accent-color:var(--key)}
+.resp{font-family:var(--mono);font-size:17px;padding:10px 14px;border-radius:8px;margin-top:10px;white-space:pre-wrap}
+.resp.ok{background:var(--okbg);color:#0E6A4C}.resp.no{background:var(--badbg);color:#9B231D}
+/* rundown */
+table.run td:first-child{font-family:var(--mono);font-weight:700;white-space:nowrap}
+table.run td:last-child{white-space:nowrap}
+/* hud */
+#hud{position:fixed;left:0;right:0;bottom:0;display:flex;align-items:center;gap:8px;padding:6px 10px;z-index:20;opacity:.15;transition:opacity .2s}
+#hud:hover,#hud:focus-within{opacity:1}
+#hud button{font:600 14px var(--sans);background:#fff;color:var(--ink);border:1.5px solid var(--ink);border-radius:6px;padding:4px 10px;cursor:pointer}
+#hud .ctr{color:#fff;font:700 14px var(--mono);background:var(--ink);padding:4px 10px;border-radius:6px}
+#prog{position:fixed;left:0;top:0;height:5px;background:var(--hl);z-index:21;transition:width .25s}
+.panel{position:fixed;z-index:30;background:#fff;color:var(--ink);border:2px solid var(--ink);border-radius:12px;box-shadow:6px 6px 0 var(--ink);display:none;font-family:var(--sans)}
+.panel.vis{display:block}
+#notes{left:16px;right:16px;bottom:52px;padding:14px 20px;font-size:18px;max-height:34vh;overflow:auto}
+#notes b{color:var(--key)}
+#overview{inset:30px;padding:20px;overflow:auto}
+#overview .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+#overview button{font:600 15px var(--sans);text-align:left;background:var(--paper);border:1.5px solid var(--ink);border-radius:8px;padding:10px;cursor:pointer;color:var(--ink);min-height:70px}
+#overview button.cur{background:var(--hl)}
+#timerbox{right:16px;top:16px;padding:14px 18px;text-align:center}
+#timerbox .t{font:700 54px var(--mono)}
+#timerbox .row{display:flex;gap:6px;justify-content:center;margin-top:6px}
+#timerbox button,#picker button{font:700 14px var(--sans);padding:5px 10px;border-radius:6px;border:1.5px solid var(--ink);background:#fff;cursor:pointer}
+#timerbox.done .t{color:var(--pen);animation:blink .6s steps(1) 6}
+#picker{left:50%;top:50%;transform:translate(-50%,-50%);width:560px;padding:20px}
+#picker textarea{width:100%;height:120px;font:16px var(--sans);border:1.5px solid var(--ink);border-radius:8px;padding:8px}
+#picker .who{font-size:44px;font-weight:800;text-align:center;min-height:64px;margin:10px 0}
+.x{float:right;font-weight:800}
+@media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}.frag{transform:none}}
+@media print{#hud,#prog,.panel{display:none !important}.slide{display:flex !important;position:relative;page-break-after:always}#stage{transform:none !important;height:auto}}
+.k-bug .term{font-size:15px;line-height:1.4}.k-bug .term pre{padding:10px 14px}.k-bug .pen{font-size:25px;margin-top:10px}.k-bug .lead{margin-bottom:10px}
+
+.slide .body>table.tbl{font-size:22px}.slide .body>table.tbl td{padding:9px 16px}
+</style></head><body><div id="app"><div id="stage"><section class="slide s-title" data-h="Judul" data-notes="Sapa kelas, cek kehadiran via QR/absen, tampilkan slide ini saat mahasiswa masuk." data-min="0–3"><div class="tw"><div class="course">GHK2AAB3 Basis Data</div><div class="q"><span class="pr">MariaDB&gt; </span><span class="txt" data-full="SELECT topik FROM pertemuan WHERE no = 5;"></span><span class="cur">_</span></div><div class="res"><div class="no">Pertemuan 5</div><h1>Data Definition Language</h1><p class="sub">Membangun, mengubah, dan merobohkan struktur tabel dengan perintah SQL.</p><div class="rows-note">1 row in set (0.00 sec)</div></div><div class="meta"><span><b>2 × 50 menit</b> kelas teori interaktif</span><span>Tekan <b>F</b> layar penuh, <b>N</b> catatan dosen, <b>T</b> timer, <b>R</b> acak nama</span></div></div></section><section class="slide " data-h="Rencana 100 menit" data-notes="Sampaikan rencana dan target; tanyakan singkat apa yang sudah mereka ingat dari pertemuan lalu." data-min="3–5"><div class="hd"><span class="tag"><b>P5</b>DDL</span><span class="kind">Rencana kelas</span></div><h2>Rencana 100 menit</h2><div class="cols wide-l"><div><table class="tbl run"><tr><th>Menit</th><th>Kegiatan</th><th>Cara</th></tr><tr><td>0–5</td><td>Pembuka, presensi, rencana kelas</td><td><span class="chip ">Klasikal</span></td></tr><tr><td>5–12</td><td>Polling: salah ketik nama kolom, lalu?</td><td><span class="chip p">Interaksi</span></td></tr><tr><td>12–40</td><td>CREATE TABLE, constraint, foreign key</td><td><span class="chip ">Klasikal</span></td></tr><tr><td>40–55</td><td>Jalankan DDL proyek kelompok</td><td><span class="chip y">Aktivitas</span></td></tr><tr><td>55–60</td><td>Jeda peregangan</td><td><span class="chip g">Istirahat</span></td></tr><tr><td>60–82</td><td>ALTER, DROP vs TRUNCATE, komentar kolom</td><td><span class="chip ">Klasikal</span></td></tr><tr><td>82–94</td><td>Kuis Wayground + pembahasan</td><td><span class="chip p">Kuis</span></td></tr><tr><td>94–100</td><td>Rekap dan exit ticket</td><td><span class="chip y">Refleksi</span></td></tr></table></div><div><h3>Setelah 100 menit, kamu bisa…</h3><ul class="pts"><li>Membedakan DDL, DML, dan DCL</li><li>Membuat tabel lengkap dengan constraint dan foreign key</li><li>Mengubah struktur tabel dengan ALTER</li><li>Memilih DROP, TRUNCATE, atau DELETE dengan tepat</li></ul></div></div></section><section class="slide k-act" data-h="Pemanasan" data-notes="Jawaban ideal: opsi 2 (ALTER). Pakai hasil voting untuk membuka topik &quot;struktur bisa diubah tanpa kehilangan data&quot;." data-min="5–10"><div class="hd"><span class="tag"><b>P5</b>DDL</span><span class="kind">Interaksi</span></div><h2>Pemanasan</h2><p class="qq">Tabel sudah berisi 1.000 baris, lalu kamu sadar nama kolomnya salah ketik. Apa yang kamu lakukan?</p><div class="plat"><span class="chip p">Mentimeter</span> Buka <b>menti.com</b>, kode: <span class="code" contenteditable="true" spellcheck="false">ketik kode</span></div><div class="tally"><div class="row"><div class="bar"><div class="fill"></div><span class="lbl">Hapus tabel, buat ulang dari nol</span></div><span class="n">0</span><button type="button" aria-label="Tambah suara">+1</button></div><div class="row"><div class="bar"><div class="fill"></div><span class="lbl">Ubah strukturnya tanpa menghapus data</span></div><span class="n">0</span><button type="button" aria-label="Tambah suara">+1</button></div><div class="row"><div class="bar"><div class="fill"></div><span class="lbl">Biarkan saja, yang penting jalan</span></div><span class="n">0</span><button type="button" aria-label="Tambah suara">+1</button></div><div class="row"><div class="bar"><div class="fill"></div><span class="lbl">Pura-pura tidak lihat</span></div><span class="n">0</span><button type="button" aria-label="Tambah suara">+1</button></div></div><p class="xs" style="margin-top:8px">Cadangan offline: hitung angkat tangan lalu klik +1 (klik kanan bar untuk −1).</p></section><section class="slide " data-h="Keluarga perintah SQL" data-notes="Hari ini fokus DDL. DML di P6, DCL di P14." data-min="12–15"><div class="hd"><span class="tag"><b>P5</b>DDL</span><span class="kind">Konsep</span></div><h2>Keluarga perintah SQL</h2><div class="cols "><div><table class="tbl"><tr><th>Kelompok</th><th>Mengurus</th><th>Perintah</th></tr><tr><td><b>DDL</b></td><td>struktur (wadah)</td><td>CREATE, ALTER, DROP, TRUNCATE, RENAME</td></tr><tr><td>DML</td><td>isi data</td><td>INSERT, SELECT, UPDATE, DELETE</td></tr><tr><td>DCL</td><td>hak akses</td><td>GRANT, REVOKE</td></tr><tr><td>TCL</td><td>transaksi</td><td>START TRANSACTION, COMMIT, ROLLBACK</td></tr></table></div><div><div class="box"><h3>Analogi rak buku</h3><p class="small">DDL membuat dan mengubah <b>raknya</b>. DML mengatur <b>bukunya</b>. DCL menentukan <b>siapa</b> yang boleh mengambil buku.</p></div></div></div></section><section class="slide " data-h="CREATE TABLE" data-notes="Jelaskan hasil DESCRIBE: kolom Null=NO karena PRIMARY KEY dan NOT NULL." data-min="15–19"><div class="hd"><span class="tag"><b>P5</b>DDL</span><span class="kind">Contoh kode</span></div><h2>CREATE TABLE</h2><div class="cols wide-r"><div><p class="small">Contoh dari modul. Pola setiap kolom:</p><p style="font-family:var(--mono);font-size:20px"><b>nama_kolom</b> TIPE <i>[constraint]</i></p><ul class="pts"><li>Pisahkan kolom dengan koma, kolom terakhir tanpa koma.</li><li>Nama tabel dan kolom: huruf kecil, pakai garis bawah.</li><li>Cek hasil dengan <code>DESCRIBE</code>.</li></ul></div><div><div class="term "><div class="bar"><span>MariaDB [praktikum_db]&gt;</span><button type="button">Salin</button></div><pre><span class="kw">CREATE</span> <span class="kw">TABLE</span> mahasiswa (
+  nim           <span class="kw">CHAR</span>(<span class="nu">10</span>)     <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,
+  nama          <span class="kw">VARCHAR</span>(<span class="nu">100</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>,
+  jurusan       <span class="kw">VARCHAR</span>(<span class="nu">50</span>),
+  tanggal_lahir <span class="kw">DATE</span>
+);
+
+<span class="kw">DESCRIBE</span> mahasiswa;</pre></div><div class="frag" style="margin-top:12px"><table class="tbl"><tr><th>Field</th><th>Type</th><th>Null</th><th>Key</th></tr><tr><td>nim</td><td>char(10)</td><td>NO</td><td>PRI</td></tr><tr><td>nama</td><td>varchar(100)</td><td>NO</td><td></td></tr><tr><td>jurusan</td><td>varchar(50)</td><td>YES</td><td></td></tr><tr><td>tanggal_lahir</td><td>date</td><td>YES</td><td></td></tr></table><div class="rows-note">4 rows in set</div></div></div></div></section><section class="slide " data-h="Rakit tabelmu sendiri" data-notes="Minta 2–3 mahasiswa maju mengusulkan kolom (email, no_hp, ipk). Diskusikan tipe data yang dipilih." data-min="19–24"><div class="hd"><span class="tag"><b>P5</b>DDL</span><span class="kind">Konsep</span></div><h2>Rakit tabelmu sendiri</h2><p class="lead">Tambahkan kolom, lihat SQL-nya terbentuk.</p><div class="body"><div data-widget="ddl"><div class="form-row"><input type="text" class="cn" placeholder="nama kolom" size="12"><select class="ct"><option>VARCHAR</option><option>CHAR</option><option>INT</option><option>DATE</option><option>DECIMAL</option><option>BOOLEAN</option><option>TEXT</option></select><input type="text" class="cl" placeholder="panjang" size="6"><label><input type="checkbox" class="cp"> PK</label><label><input type="checkbox" class="cnn" checked> NOT NULL</label><button class="btn" data-a="add" type="button">Tambah kolom</button><button class="btn ghost" data-a="undo" type="button">Hapus terakhir</button></div><div class="cols"><div class="term sm"><div class="bar"><span>SQL yang terbentuk</span><button type="button">Salin</button></div><pre class="dsql"></pre></div><div><p class="xs">Pratinjau tabel</p><div class="dprev"></div><p class="xs" style="margin-top:12px">Untuk DECIMAL isi panjang seperti <code>3,2</code>.</p></div></div></div></div></section><section class="slide " data-h="Constraint: aturan penjaga data" data-notes="Constraint adalah pagar: lebih baik data ditolak saat masuk daripada dibersihkan belakangan." data-min="24–29"><div class="hd"><span class="tag"><b>P5</b>DDL</span><span class="kind">Konsep</span></div><h2>Constraint: aturan penjaga data</h2><div class="cols "><div><table class="tbl"><tr><th>Constraint</th><th>Menjaga</th><th>Contoh</th></tr><tr><td>PRIMARY KEY</td><td>unik + tidak kosong</td><td>nim</td></tr><tr><td>NOT NULL</td><td>wajib diisi</td><td>nama</td></tr><tr><td>UNIQUE</td><td>tidak boleh kembar</td><td>email</td></tr><tr><td>DEFAULT</td><td>nilai bawaan</td><td>status DEFAULT 'aktif'</td></tr><tr><td>CHECK</td><td>syarat nilai</td><td>CHECK (nilai BETWEEN 0 AND 100)</td></tr><tr><td>FOREIGN KEY</td><td>rujukan valid</td><td>nim → mahasiswa</td></tr><tr><td>AUTO_INCREMENT</td><td>nomor otomatis</td><td>id</td></tr></table></div><div><div class="pen"><small>Catatan versi</small>CHECK baru benar-benar ditegakkan di MariaDB 10.2+ dan MySQL 8.0.16+. XAMPP 8.2 membawa MariaDB 10.4, jadi aman.</div></div></div></section><section class="slide " data-h="Tabel dengan foreign key" data-notes="Kalau tipe FK beda (INT vs CHAR), MariaDB menolak dengan errno 150." data-min="29–34"><div class="hd"><span class="tag"><b>P5</b>DDL</span><span class="kind">Contoh kode</span></div><h2>Tabel dengan foreign key</h2><div class="cols wide-r"><div><p class="small">Tabel <b>induk</b> (mahasiswa, matakuliah) dibuat dulu, baru tabel <b>anak</b> (nilai).</p><ul class="pts"><li><code>UNIQUE (nim, kode_mk)</code>: satu mahasiswa tidak dinilai dua kali untuk MK sama.</li><li>Tipe kolom FK harus sama dengan kolom yang dirujuk.</li></ul></div><div><div class="term sm"><div class="bar"><span>MariaDB [praktikum_db]&gt;</span><button type="button">Salin</button></div><pre><span class="kw">CREATE</span> <span class="kw">TABLE</span> matakuliah (
+  kode_mk <span class="kw">CHAR</span>(<span class="nu">4</span>)      <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,
+  nama_mk <span class="kw">VARCHAR</span>(<span class="nu">100</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>,
+  sks     <span class="kw">INT</span>          <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">CHECK</span> (sks <span class="kw">BETWEEN</span> <span class="nu">1</span> <span class="kw">AND</span> <span class="nu">6</span>)
+);
+
+<span class="kw">CREATE</span> <span class="kw">TABLE</span> nilai (
+  id      <span class="kw">INT</span> <span class="kw">AUTO_INCREMENT</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,
+  nim     <span class="kw">CHAR</span>(<span class="nu">10</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>,
+  kode_mk <span class="kw">CHAR</span>(<span class="nu">4</span>)  <span class="kw">NOT</span> <span class="kw">NULL</span>,
+  nilai   <span class="kw">INT</span> <span class="kw">CHECK</span> (nilai <span class="kw">BETWEEN</span> <span class="nu">0</span> <span class="kw">AND</span> <span class="nu">100</span>),
+  <span class="kw">UNIQUE</span> (nim, kode_mk),
+  <span class="kw">FOREIGN</span> <span class="kw">KEY</span> (nim)     <span class="kw">REFERENCES</span> mahasiswa(nim),
+  <span class="kw">FOREIGN</span> <span class="kw">KEY</span> (kode_mk) <span class="kw">REFERENCES</span> matakuliah(kode_mk)
+);</pre></div></div></div></section><section class="slide k-quiz" data-h="Kuis: Kampus ingin memastikan tidak ada dua mahasiswa memakai emai" data-notes="" data-min="34–36"><div class="hd"><span class="tag"><b>P5</b>DDL</span><span class="kind">Cek pemahaman</span></div><p class="qq">Kampus ingin memastikan tidak ada dua mahasiswa memakai email yang sama. Constraint yang tepat?</p><div class="qz" data-ans="2"><button type="button" data-l="A">NOT NULL</button><button type="button" data-l="B">DEFAULT</button><button type="button" data-l="C">UNIQUE</button><button type="button" data-l="D">CHECK</button></div><div class="why"><b>Pembahasan.</b> UNIQUE menolak nilai kembar. Kolom email bukan primary key, tetapi tetap harus unik.</div><div style="margin-top:10px"><button class="btn ghost show-ans" type="button">Tampilkan jawaban</button></div></section><section class="slide k-act" data-h="DDL proyek kelompok" data-notes="Kumpulkan pesan error yang muncul untuk dibahas setelah jeda." data-min="40–55"><div class="hd"><span class="tag"><b>P5</b>DDL</span><span class="kind">Aktivitas</span></div><h2>DDL proyek kelompok</h2><div><span class="chip y">Kelompok proyek</span><span class="chip">15 menit</span></div><div class="actwrap" style="margin-top:16px"><div><ol class="steps"><li>Buka database kelompok: <code>USE nama_kelompok_db;</code></li><li>Jalankan CREATE TABLE hasil perbaikan P3, tabel induk lebih dulu.</li><li>Tambahkan minimal satu UNIQUE dan satu CHECK yang masuk akal.</li><li>Screenshot <code>SHOW TABLES;</code> dan <code>DESCRIBE</code> satu tabel anak.</li></ol></div><div><div class="ring" data-sec="900"><svg viewBox="0 0 210 210"><circle cx="105" cy="105" r="92" fill="none" stroke="#DCE5FF" stroke-width="14"/><circle class="fg" cx="105" cy="105" r="92" fill="none" stroke="#2F5BEA" stroke-width="14" stroke-linecap="round"/></svg><span class="t"></span></div><div class="ring-ctl"><button class="btn" data-a="go">Mulai</button><button class="btn ghost" data-a="reset">Ulang</button></div></div></div></section><section class="slide " data-h="ALTER TABLE: renovasi tanpa merobohkan" data-notes="Tiga contoh pertama dari modul, CHANGE dan RENAME tambahan." data-min="60–65"><div class="hd"><span class="tag"><b>P5</b>DDL</span><span class="kind">Contoh kode</span></div><h2>ALTER TABLE: renovasi tanpa merobohkan</h2><div class="cols wide-r"><div><ul class="pts"><li><b>ADD</b>: tambah kolom.</li><li><b>MODIFY</b>: ubah tipe/constraint.</li><li><b>CHANGE</b>: ganti nama <i>dan</i> tipe sekaligus.</li><li><b>DROP COLUMN</b>: hapus kolom beserta datanya.</li></ul><div class="pen"><small>Catatan versi</small>RENAME COLUMN baru ada di MariaDB 10.5. Di XAMPP (10.4) pakai CHANGE.</div></div><div><div class="term "><div class="bar"><span>MariaDB [praktikum_db]&gt;</span><button type="button">Salin</button></div><pre><span class="kw">ALTER</span> <span class="kw">TABLE</span> mahasiswa <span class="kw">ADD</span> email <span class="kw">VARCHAR</span>(<span class="nu">100</span>) <span class="kw">UNIQUE</span>;
+<span class="kw">ALTER</span> <span class="kw">TABLE</span> mahasiswa <span class="kw">MODIFY</span> nama <span class="kw">VARCHAR</span>(<span class="nu">150</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>;
+<span class="kw">ALTER</span> <span class="kw">TABLE</span> mahasiswa <span class="kw">CHANGE</span> jurusan prodi <span class="kw">VARCHAR</span>(<span class="nu">50</span>);
+<span class="kw">ALTER</span> <span class="kw">TABLE</span> mahasiswa <span class="kw">DROP</span> <span class="kw">COLUMN</span> email;
+<span class="kw">RENAME</span> <span class="kw">TABLE</span> mahasiswa <span class="kw">TO</span> mhs;</pre></div></div></div></section><section class="slide k-quiz" data-h="Kuis: Kolom jurusan ingin diganti namanya menjadi prodi di XAMPP (" data-notes="" data-min="65–67"><div class="hd"><span class="tag"><b>P5</b>DDL</span><span class="kind">Cek pemahaman</span></div><p class="qq">Kolom <code>jurusan</code> ingin diganti namanya menjadi <code>prodi</code> di XAMPP (MariaDB 10.4). Perintahnya…</p><div class="qz" data-ans="1"><button type="button" data-l="A">ALTER TABLE mahasiswa MODIFY prodi VARCHAR(50);</button><button type="button" data-l="B">ALTER TABLE mahasiswa CHANGE jurusan prodi VARCHAR(50);</button><button type="button" data-l="C">RENAME jurusan TO prodi;</button><button type="button" data-l="D">UPDATE mahasiswa SET jurusan = prodi;</button></div><div class="why"><b>Pembahasan.</b> CHANGE menerima nama lama, nama baru, lalu tipe. MODIFY tidak bisa mengganti nama.</div><div style="margin-top:10px"><button class="btn ghost show-ans" type="button">Tampilkan jawaban</button></div></section><section class="slide " data-h="DROP, TRUNCATE, DELETE" data-notes="TRUNCATE juga me-reset AUTO_INCREMENT. DELETE dibahas lengkap di P6." data-min="67–70"><div class="hd"><span class="tag"><b>P5</b>DDL</span><span class="kind">Konsep</span></div><h2>DROP, TRUNCATE, DELETE</h2><div class="cols "><div><table class="tbl"><tr><th>Perintah</th><th>Struktur</th><th>Data</th><th>Bisa pakai WHERE</th></tr><tr><td>DROP TABLE t</td><td>hilang</td><td>hilang</td><td>tidak</td></tr><tr><td>TRUNCATE TABLE t</td><td>tetap</td><td>semua hilang</td><td>tidak</td></tr><tr><td>DELETE FROM t</td><td>tetap</td><td>dipilih</td><td>ya (DML)</td></tr></table></div><div><div class="pen"><small>Hati-hati</small>DROP dan TRUNCATE tidak bisa di-ROLLBACK. Anggap tombol hapus permanen.</div></div></div></section><section class="slide k-bug" data-h="Menambahkan keterangan kolom" data-notes="Hasil di MariaDB: ERROR 1064. Pelajaran: SQL punya dialek, selalu cek dokumentasi DBMS yang dipakai. Catatan: MODIFY menulis ulang definisi kolom, jadi sertakan tipe lengkapnya." data-min="70–74"><div class="hd"><span class="tag"><b>P5</b>DDL</span><span class="kind">Cari bug</span></div><h2>Menambahkan keterangan kolom</h2><p class="lead">Contoh di modul. Coba jalankan di MariaDB, apa yang terjadi?</p><div class="cols"><div><div class="term sm"><div class="bar"><span>Kode dengan bug</span><button type="button">Salin</button></div><pre><span class="kw">COMMENT</span> <span class="kw">ON</span> <span class="kw">COLUMN</span> Mahasiswa.NIM
+  <span class="kw">IS</span> <span class="st">&#x27;Nomor Induk Mahasiswa sebagai Primary Key&#x27;</span>;</pre></div><div style="margin-top:12px"><button class="btn y reveal-btn" data-t=".bugfix" type="button">Buka perbaikan</button></div></div><div class="bugfix frag"><div class="term sm"><div class="bar"><span>Versi benar</span><button type="button">Salin</button></div><pre><span class="kw">ALTER</span> <span class="kw">TABLE</span> mahasiswa
+  <span class="kw">MODIFY</span> nim <span class="kw">CHAR</span>(<span class="nu">10</span>)
+  <span class="kw">COMMENT</span> <span class="st">&#x27;Nomor Induk Mahasiswa sebagai Primary Key&#x27;</span>;
+
+<span class="cm">-- keterangan tabel</span>
+<span class="kw">ALTER</span> <span class="kw">TABLE</span> mahasiswa <span class="kw">COMMENT</span> = <span class="st">&#x27;Data induk mahasiswa&#x27;</span>;
+<span class="kw">SHOW</span> <span class="kw">FULL</span> COLUMNS <span class="kw">FROM</span> mahasiswa;</pre></div><div class="pen"><small>Kenapa?</small>COMMENT ON COLUMN adalah sintaks PostgreSQL/Oracle. MySQL dan MariaDB menaruh COMMENT pada definisi kolom.</div></div></div></section><section class="slide k-quiz" data-h="Susun definisi foreign key" data-notes="ON DELETE CASCADE: jika mahasiswa dihapus, nilainya ikut terhapus. Diskusikan kapan ini diinginkan dan kapan berbahaya." data-min="74–77"><div class="hd"><span class="tag"><b>P5</b>DDL</span><span class="kind">Tantangan</span></div><h2>Susun definisi foreign key</h2><p class="lead">Klausa ini ditaruh di dalam CREATE TABLE nilai.</p><div class="order" data-items="[&quot;CONSTRAINT fk_nilai_mhs&quot;, &quot;FOREIGN KEY (nim)&quot;, &quot;REFERENCES mahasiswa(nim)&quot;, &quot;ON DELETE CASCADE&quot;]"><p class="xs">Klik token untuk memindahkan ke baris jawaban (klik lagi untuk mengembalikan).</p><div class="pool"></div><p class="xs" style="margin:10px 0 4px">Jawaban:</p><div class="ans"></div><div class="ctl" style="display:flex;gap:8px;margin-top:12px"><button class="btn ok" data-a="check" type="button">Periksa</button><button class="btn ghost" data-a="reset" type="button">Acak ulang</button><button class="btn ghost" data-a="solve" type="button">Tunjukkan</button></div><div class="ordres"></div></div></section><section class="slide k-play" data-h="Coba di playground" data-notes="Klik &quot;Lihat tabel&quot; untuk melihat struktur. Tunjukkan perbedaan dialek sebagai pengingat." data-min="77–80"><div class="hd"><span class="tag"><b>P5</b>DDL</span><span class="kind">Coba langsung</span></div><h2>Coba di playground</h2><p class="lead" style="margin-bottom:10px">Playground memakai SQLite: tipe dan ALTER lebih terbatas (tidak ada MODIFY/CHANGE). Sintaks lengkap tetap dicoba di XAMPP.</p><div class="pg"><div><textarea spellcheck="false" aria-label="Editor SQL">-- tulis perintah DDL di sini
+</textarea><div class="ctl"><button class="btn ok" data-a="run" type="button">Jalankan</button><button class="btn ghost" data-a="tables" type="button">Lihat tabel</button><button class="btn ghost" data-a="reset" type="button">Reset data</button></div><div class="chips"><button type="button" data-q="CREATE TABLE dosen (
+  id_dosen INTEGER PRIMARY KEY,
+  nama_dosen TEXT NOT NULL
+);">Buat tabel dosen</button><button type="button" data-q="ALTER TABLE dosen ADD COLUMN email TEXT;">Tambah kolom</button><button type="button" data-q="DROP TABLE dosen;">Hapus tabel</button></div><p class="stat"></p></div><div class="out"><span class="xs">Hasil query tampil di sini.</span></div></div></section><section class="slide k-quiz" data-h="Kuis: Tabel nilai punya FK ke mahasiswa. Apa yang terjadi saat men" data-notes="" data-min="80–82"><div class="hd"><span class="tag"><b>P5</b>DDL</span><span class="kind">Cek pemahaman</span></div><p class="qq">Tabel <code>nilai</code> punya FK ke <code>mahasiswa</code>. Apa yang terjadi saat menjalankan <code>DROP TABLE mahasiswa;</code>?</p><div class="qz" data-ans="1"><button type="button" data-l="A">Kedua tabel terhapus</button><button type="button" data-l="B">Ditolak karena masih dirujuk foreign key</button><button type="button" data-l="C">Hanya data yang hilang</button><button type="button" data-l="D">Kolom nim di nilai menjadi NULL</button></div><div class="why"><b>Pembahasan.</b> InnoDB menolak menghapus tabel induk yang masih dirujuk. Hapus tabel anak dulu, atau hapus constraint-nya.</div><div style="margin-top:10px"><button class="btn ghost show-ans" type="button">Tampilkan jawaban</button></div></section><section class="slide k-quiz" data-h="Kuis Wayground" data-notes="" data-min="82–94"><div class="hd"><span class="tag"><b>P5</b>DDL</span><span class="kind">Kuis</span></div><h2>Kuis Wayground</h2><div class="cols"><div><p class="lead">7 soal pilihan ganda, 20–30 detik per soal. Poin untuk jawaban benar dan cepat.</p><ul class="pts"><li>Dosen: impor file <code>wayground/P05.xlsx</code> ke Wayground (dulu Quizizz), lalu mulai sesi <i>Live</i>.</li><li>Mahasiswa: buka <b>wayground.com/join</b> di HP, masukkan kode.</li><li>Setelah tiap soal, bahas 1 soal yang paling banyak salah.</li></ul></div><div><div class="box"><h3>Kode sesi</h3><p style="font:800 64px var(--mono);margin:6px 0" contenteditable="true" spellcheck="false">------</p><p class="xs">Klik angka di atas untuk mengetik kode dari Wayground.</p></div><div class="tip"><b>Tanpa internet?</b> Pakai slide Kuis cepat di deck ini, jawab dengan angkat kartu A/B/C/D.</div></div></div></section><section class="slide " data-h="Rekap &amp; exit ticket" data-notes="" data-min="94–100"><div class="hd"><span class="tag"><b>P5</b>DDL</span><span class="kind">Penutup</span></div><h2>Rekap & exit ticket</h2><div class="cols"><div><h3>Yang kita bawa pulang</h3><ul class="pts"><li>DDL mengurus struktur: CREATE, ALTER, DROP, TRUNCATE.</li><li>Constraint menjaga kualitas data sejak awal.</li><li>Buat tabel induk dulu, hapus tabel anak dulu.</li><li>Setiap DBMS punya dialek: COMMENT di MySQL berbeda dari PostgreSQL.</li></ul></div><div><div class="box"><h3>Exit ticket</h3><p class="small">Tuliskan satu ALTER TABLE yang akan kamu jalankan di proyek kelompok dan alasannya.</p><p class="xs">Jawab di Mentimeter (open ended) atau tulis di kertas kecil sebelum keluar kelas.</p></div><div class="tip" style="margin-top:18px"><b>Pertemuan berikutnya:</b> DML: mengisi, membaca, mengubah, dan menghapus data.</div></div></div></section></div></div><div id="prog"></div>
+<div id="hud"><button id="b-prev" type="button">&#8592;</button><span class="ctr" id="ctr"></span><button id="b-next" type="button">&#8594;</button>
+<button id="b-ov" type="button">Daftar slide (O)</button><button id="b-notes" type="button">Catatan (N)</button><button id="b-timer" type="button">Timer (T)</button><button id="b-pick" type="button">Acak nama (R)</button><button id="b-fs" type="button">Layar penuh (F)</button><a href="index.html" style="color:#fff;font:600 14px var(--sans);margin-left:auto">Semua pertemuan</a></div>
+<div class="panel" id="notes"><button class="x btn ghost" type="button">Tutup</button><div class="c"></div></div>
+<div class="panel" id="overview"><button class="x btn ghost" type="button">Tutup</button><h3 style="margin:0 0 12px">Lompat ke slide</h3><div class="grid"></div></div>
+<div class="panel" id="timerbox"><button class="x btn ghost" type="button" style="float:none">Tutup</button><div class="t">00:00</div><div class="row"><button data-min="1" type="button">1m</button><button data-min="3" type="button">3m</button><button data-min="5" type="button">5m</button><button data-min="10" type="button">10m</button><button data-min="15" type="button">15m</button><button data-act="pause" type="button">Jeda/Lanjut</button></div></div>
+<div class="panel" id="picker"><button class="x btn ghost" type="button">Tutup</button><h3 style="margin:0 0 8px">Acak nama mahasiswa</h3><textarea placeholder="Tempel daftar nama, satu per baris (tidak disimpan setelah tab ditutup)"></textarea><div class="who"></div><div style="display:flex;gap:8px;align-items:center"><button data-act="spin" type="button">Acak</button><button data-act="clear" type="button">Reset riwayat</button><label style="font-size:14px"><input type="checkbox" id="pk-uniq" checked> jangan ulang nama yang sudah terpilih</label></div></div><script>window.DECK={"no": 5, "title": "Data Definition Language", "seed": "\nCREATE TABLE mahasiswa (\n  nim TEXT PRIMARY KEY, nama TEXT NOT NULL, jurusan TEXT, fakultas TEXT,\n  tahun_masuk INTEGER, tanggal_lahir TEXT\n);\nINSERT INTO mahasiswa VALUES\n('2023100011','Ayu Pratiwi','Informatika','Sains dan Teknologi',2023,'2005-03-14'),\n('2023100012','Budi Santoso','Sastra Mesin','Teknik',2023,'2004-04-15'),\n('2022100021','Cecep Hidayat','Informatika','Sains dan Teknologi',2022,'2004-01-09'),\n('2022100022','Dinda Maharani','Akuntansi','Ekonomi',2022,NULL),\n('2024100031','Euis Nurhayati','Sastra Mesin','Teknik',2024,'2006-07-21'),\n('2024100032','Fajar Ramadhan','Akuntansi','Ekonomi',2024,'2005-11-30'),\n('2021100041','Gilang Permana','Informatika','Sains dan Teknologi',2021,'2003-05-02'),\n('2023100013','Asri Kurnia','Sistem Informasi','Sains dan Teknologi',2023,'2005-09-18'),\n('2024100033','Hana Salsabila','Sistem Informasi','Sains dan Teknologi',2024,NULL),\n('2022100023','Jihan Aulia','Informatika','Sains dan Teknologi',2022,'2004-12-25');\nCREATE TABLE matakuliah (kode_mk TEXT PRIMARY KEY, nama_mk TEXT NOT NULL, sks INTEGER);\nINSERT INTO matakuliah VALUES ('BD01','Basis Data',3),('AL01','Algoritma',3),('JK01','Jaringan Komputer',3),('MM01','Multimedia Dasar',2);\nCREATE TABLE nilai (id INTEGER PRIMARY KEY, nim TEXT, kode_mk TEXT, nilai INTEGER);\nINSERT INTO nilai (nim,kode_mk,nilai) VALUES\n('2023100011','BD01',88),('2023100011','AL01',91),('2023100011','JK01',79),\n('2023100012','BD01',75),('2023100012','MM01',83),\n('2022100021','BD01',64),('2022100021','AL01',70),('2022100021','JK01',68),\n('2022100022','BD01',92),('2022100022','AL01',85),\n('2024100031','BD01',81),('2024100031','MM01',90),\n('2024100032','BD01',70),('2024100032','JK01',74),\n('2021100041','BD01',59),('2021100041','AL01',77),\n('2023100013','BD01',86),('2023100013','MM01',88),\n('2024100033','BD01',78),\n('9999999999','BD01',55);\n"};</script><script>(function(){
+'use strict';
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const slides=$$('.slide'), stage=$('#stage');
+let cur=0;
+
+/* ---------- layout & navigation ---------- */
+function fit(){const s=Math.min(innerWidth/1280,innerHeight/720);stage.style.transform='scale('+s+')';}
+addEventListener('resize',fit);fit();
+function update(){
+  $('#prog').style.width=((cur+1)/slides.length*100)+'%';
+  $('#ctr').textContent=(cur+1)+' / '+slides.length;
+  const n=slides[cur].dataset;
+  $('#notes .c').innerHTML=(n.min?'<b>Alokasi: '+esc(n.min)+'</b><br>':'')+(n.notes||'<i>Tidak ada catatan untuk slide ini.</i>');
+  $$('#overview button').forEach((b,i)=>b.classList.toggle('cur',i===cur));
+}
+function show(i,dir){
+  i=Math.max(0,Math.min(slides.length-1,i));
+  slides[cur].classList.remove('on');cur=i;const s=slides[cur];s.classList.add('on');
+  $$('.frag',s).forEach(f=>f.classList.toggle('vis',dir<0));
+  update();enter(s);
+  try{history.replaceState(null,'','#'+(cur+1));}catch(e){}
+}
+function next(){const f=$$('.frag:not(.vis)',slides[cur]);if(f.length){f[0].classList.add('vis');return;}show(cur+1,1);}
+function prev(){const f=$$('.frag.vis',slides[cur]);if(f.length){f[f.length-1].classList.remove('vis');return;}show(cur-1,-1);}
+const typing=el=>el&&(el.tagName==='INPUT'||el.tagName==='TEXTAREA'||el.tagName==='SELECT'||el.isContentEditable);
+addEventListener('keydown',e=>{
+  if(e.key==='Escape'){$$('.panel').forEach(p=>p.classList.remove('vis'));document.activeElement&&document.activeElement.blur();return;}
+  if(typing(e.target)||e.ctrlKey||e.metaKey||e.altKey)return;
+  const k=e.key;
+  if(k==='ArrowRight'||k==='PageDown'||k===' '){e.preventDefault();next();}
+  else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev();}
+  else if(k==='Home')show(0,1); else if(k==='End')show(slides.length-1,1);
+  else if(k==='f'||k==='F')fs(); else if(k==='n'||k==='N')tog('#notes');
+  else if(k==='o'||k==='O')tog('#overview'); else if(k==='t'||k==='T')tog('#timerbox');
+  else if(k==='r'||k==='R')tog('#picker');
+});
+let tx=null;
+stage.addEventListener('pointerdown',e=>{tx=(e.target.closest('button,input,textarea,select,a,.card,[contenteditable]'))?null:e.clientX;});
+stage.addEventListener('pointerup',e=>{if(tx===null)return;const d=e.clientX-tx;if(Math.abs(d)>70){d<0?next():prev();}tx=null;});
+function fs(){if(!document.fullscreenElement)document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();else document.exitFullscreen();}
+function tog(id){$(id).classList.toggle('vis');}
+$('#b-prev').onclick=prev;$('#b-next').onclick=next;$('#b-fs').onclick=fs;
+$('#b-notes').onclick=()=>tog('#notes');$('#b-ov').onclick=()=>tog('#overview');
+$('#b-timer').onclick=()=>tog('#timerbox');$('#b-pick').onclick=()=>tog('#picker');
+$$('.panel .x').forEach(x=>x.onclick=()=>x.closest('.panel').classList.remove('vis'));
+// overview
+const og=$('#overview .grid');
+slides.forEach((s,i)=>{const b=document.createElement('button');b.innerHTML='<b>'+(i+1)+'</b> '+esc(s.dataset.h||'');b.onclick=()=>{show(i,1);tog('#overview');};og.appendChild(b);});
+
+/* ---------- beep ---------- */
+function beep(){try{const a=new (window.AudioContext||window.webkitAudioContext)();[0,.35,.7].forEach(t=>{const o=a.createOscillator(),g=a.createGain();o.frequency.value=880;o.connect(g);g.connect(a.destination);g.gain.setValueAtTime(.2,a.currentTime+t);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+t+.3);o.start(a.currentTime+t);o.stop(a.currentTime+t+.3);});}catch(e){}}
+const mmss=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+function makeTimer(disp,onTick,onDone){let left=0,total=0,h=null;return{
+  set(sec){this.stop();left=total=sec;disp(left,total);},
+  start(){if(h||left<=0)return;h=setInterval(()=>{left--;disp(left,total);if(left<=0){this.stop();beep();onDone&&onDone();}},1000);},
+  stop(){clearInterval(h);h=null;}, running(){return !!h;}};}
+// global timer
+const tb=$('#timerbox'),gt=makeTimer(l=>{$('.t',tb).textContent=mmss(l);},null,()=>tb.classList.add('done'));
+$$('[data-min]',tb).forEach(b=>b.onclick=()=>{tb.classList.remove('done');gt.set(+b.dataset.min*60);gt.start();});
+$('[data-act=pause]',tb).onclick=()=>gt.running()?gt.stop():gt.start();
+// picker
+const pk=$('#picker');let used=[];
+$('[data-act=spin]',pk).onclick=()=>{
+  let names=$('textarea',pk).value.split(/\n|,/).map(s=>s.trim()).filter(Boolean);
+  if($('#pk-uniq').checked)names=names.filter(n=>!used.includes(n));
+  const w=$('.who',pk);if(!names.length){w.textContent='Isi daftar nama dulu';return;}
+  let k=0;const n=RM?1:18;const iv=setInterval(()=>{const pick=names[Math.floor(Math.random()*names.length)];w.textContent=pick;if(++k>=n){clearInterval(iv);used.push(pick);}},70);
+};
+$('[data-act=clear]',pk).onclick=()=>{used=[];$('.who',pk).textContent='';};
+
+/* ---------- per-slide init on enter ---------- */
+const inited=new WeakSet();
+function enter(s){
+  if(s.classList.contains('s-title'))typeTitle(s);
+  if(inited.has(s))return;inited.add(s);
+  $$('.qz',s).forEach(initQuiz);$$('.tally',s).forEach(initTally);$$('.cloudw',s).forEach(initCloud);
+  $$('.ring',s).forEach(initRing);$$('.order',s).forEach(initOrder);$$('.card',s).forEach(c=>c.onclick=()=>c.classList.toggle('flip'));
+  $$('.reveal-btn',s).forEach(b=>b.onclick=()=>{$(b.dataset.t,s).classList.add('vis');b.remove();});
+  $$('.pg',s).forEach(initPG);
+  $$('[data-widget]',s).forEach(w=>{const f=W[w.dataset.widget];f&&f(w);});
+}
+document.addEventListener('click',e=>{const b=e.target.closest('.term .bar button');if(!b)return;const t=$('pre',b.closest('.term')).innerText;navigator.clipboard&&navigator.clipboard.writeText(t).then(()=>{b.textContent='Tersalin';setTimeout(()=>b.textContent='Salin',1200);});});
+
+function typeTitle(s){
+  const q=$('.q .txt',s),res=$('.res',s);if(!q)return;const full=q.dataset.full;
+  if(RM||s.dataset.typed){q.textContent=full;res.classList.add('vis');return;}
+  s.dataset.typed=1;q.textContent='';let i=0;
+  const iv=setInterval(()=>{q.textContent=full.slice(0,++i);if(i>=full.length){clearInterval(iv);setTimeout(()=>res.classList.add('vis'),250);}},38);
+}
+function initQuiz(z){const ans=+z.dataset.ans,why=z.parentElement.querySelector('.why');
+  $$('button',z).forEach((b,i)=>b.onclick=()=>{if(z.dataset.done){return;}
+    if(i===ans){b.classList.add('right');z.dataset.done=1;why&&why.classList.add('vis');}else{b.classList.add('wrong');}});
+  const r=z.parentElement.querySelector('.show-ans');r&&(r.onclick=()=>{$$('button',z)[ans].classList.add('right');z.dataset.done=1;why&&why.classList.add('vis');});}
+function initTally(t){const rows=$$('.row',t);const cnt=rows.map(()=>0);
+  const draw=()=>{const m=Math.max(1,...cnt);rows.forEach((r,i)=>{$('.fill',r).style.width=(cnt[i]/m*100)+'%';$('.n',r).textContent=cnt[i];});};
+  rows.forEach((r,i)=>{$('button',r).onclick=()=>{cnt[i]++;draw();};$('.bar',r).oncontextmenu=e=>{e.preventDefault();cnt[i]=Math.max(0,cnt[i]-1);draw();};});}
+function initCloud(w){const box=$('.cloud',w),inp=$('input',w),words={};
+  const draw=()=>{const m=Math.max(1,...Object.values(words));box.innerHTML=Object.entries(words).sort((a,b)=>b[1]-a[1]).map(([k,v])=>'<span style="font-size:'+(20+v/m*30)+'px;opacity:'+(.55+v/m*.45)+'">'+esc(k)+'</span>').join('')||'<span class="xs">Kata dari mahasiswa akan muncul di sini.</span>';};
+  const add=()=>{inp.value.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean).forEach(k=>words[k]=(words[k]||0)+1);inp.value='';draw();};
+  $('button',w).onclick=add;inp.onkeydown=e=>{if(e.key==='Enter')add();};draw();}
+function initRing(r){const sec=+r.dataset.sec,c=$('circle.fg',r),L=2*Math.PI*92;c.style.strokeDasharray=L;
+  const tm=makeTimer((l,t)=>{$('.t',r).textContent=mmss(l);c.style.strokeDashoffset=L*(1-l/t);});tm.set(sec);
+  const ctl=r.nextElementSibling;$('[data-a=go]',ctl).onclick=e=>{tm.running()?(tm.stop(),e.target.textContent='Lanjut'):(tm.start(),e.target.textContent='Jeda');};
+  $('[data-a=reset]',ctl).onclick=()=>{tm.set(sec);$('[data-a=go]',ctl).textContent='Mulai';};}
+function initOrder(o){const items=JSON.parse(o.dataset.items),pool=$('.pool',o),ans=$('.ans',o),res=$('.ordres',o);
+  const reset=()=>{pool.innerHTML='';ans.innerHTML='';res.textContent='';items.map((t,i)=>[t,i]).sort(()=>Math.random()-.5).forEach(([t,i])=>{const b=document.createElement('button');b.className='tok';b.textContent=t;b.dataset.i=i;b.onclick=()=>{(b.parentElement===pool?ans:pool).appendChild(b);};pool.appendChild(b);});};
+  $('[data-a=check]',o).onclick=()=>{const got=$$('.tok',ans).map(b=>+b.dataset.i);const ok=got.length===items.length&&got.every((v,i)=>v===i);res.textContent=ok?'Urutan benar. Mantap!':'Belum tepat. Coba lagi — perhatikan urutan eksekusi.';res.style.color=ok?'var(--ok)':'var(--pen)';};
+  $('[data-a=reset]',o).onclick=reset;$('[data-a=solve]',o).onclick=()=>{ans.innerHTML='';pool.innerHTML='';items.forEach((t,i)=>{const b=document.createElement('button');b.className='tok';b.textContent=t;b.dataset.i=i;ans.appendChild(b);});res.textContent='';};reset();}
+
+/* ---------- SQL playground (sql.js / SQLite) ---------- */
+let SQLP=null,DB=null;
+function loadSQL(){if(SQLP)return SQLP;SQLP=new Promise((res,rej)=>{
+  const src=[['https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/','sql-wasm.js'],['https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/','sql-wasm.js']];let k=0;
+  const nx=()=>{if(k>=src.length){rej(new Error('offline'));return;}const [b,f]=src[k++];const sc=document.createElement('script');sc.src=b+f;
+    sc.onload=()=>window.initSqlJs({locateFile:x=>b+x}).then(res,nx);sc.onerror=nx;document.head.appendChild(sc);};nx();});return SQLP;}
+function freshDB(S){DB=new S.Database();DB.run('PRAGMA foreign_keys=OFF;');DB.exec(window.DECK.seed||'');}
+function tableHTML(r){return '<table class="tbl"><tr>'+r.columns.map(c=>'<th>'+esc(c)+'</th>').join('')+'</tr>'+r.values.map(v=>'<tr>'+v.map(x=>x===null?'<td class="null">NULL</td>':'<td>'+esc(x)+'</td>').join('')+'</tr>').join('')+'</table><div class="rows-note">'+r.values.length+' row'+(r.values.length===1?'':'s')+' in set</div>';}
+function initPG(pg){const ta=$('textarea',pg),out=$('.out',pg),st=$('.stat',pg);
+  st.textContent='Memuat mesin SQL (SQLite di browser)…';
+  loadSQL().then(S=>{if(!DB)freshDB(S);st.textContent='Siap. Ctrl+Enter untuk menjalankan.';pg._S=S;})
+    .catch(()=>{st.textContent='Mesin SQL butuh internet. Tanpa internet, jalankan query yang sama di XAMPP (mysql -u root).';});
+  const run=()=>{if(!DB){st.textContent='Mesin SQL belum siap.';return;}const sql=ta.value.trim();if(!sql)return;
+    try{const t0=performance.now();const rs=DB.exec(sql);const ms=((performance.now()-t0)/1000).toFixed(3);
+      out.innerHTML=rs.length?rs.map(tableHTML).join('<br>'):'<div class="resp ok">Query OK, '+DB.getRowsModified()+' row(s) affected</div>';st.textContent='Selesai ('+ms+' sec)';}
+    catch(e){out.innerHTML='<div class="err">ERROR: '+esc(e.message)+'</div><div class="xs" style="margin-top:8px">Cek ejaan tabel/kolom, tanda kutip, dan titik koma. Ingat: playground memakai dialek SQLite.</div>';}};
+  $('[data-a=run]',pg).onclick=run;ta.onkeydown=e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();run();}};
+  $('[data-a=reset]',pg).onclick=()=>{if(pg._S){freshDB(pg._S);out.innerHTML='<div class="resp ok">Data dikembalikan ke kondisi awal.</div>';}};
+  $('[data-a=tables]',pg).onclick=()=>{ta.value="SELECT name AS tabel, sql AS struktur FROM sqlite_master WHERE type IN ('table','view');";run();};
+  $$('.chips button',pg).forEach(b=>b.onclick=()=>{ta.value=b.dataset.q;ta.focus();});}
+
+/* ---------- widgets ---------- */
+const W={};
+const MHS=[['101','Ayu'],['102','Budi'],['103','Cecep'],['104','Dinda']];
+const NIL=[['101','Basis Data',88],['102','Basis Data',75],['101','Jarkom',90],['105','Basis Data',70]];
+W.join=w=>{
+  const venn=$('.venn',w),out=$('.jout',w),sqlb=$('.jsql',w),L=$$('tr',$('.jl',w)).slice(1),R=$$('tr',$('.jr',w)).slice(1);
+  const col={INNER:['#fff','#FFE45C','#fff'],LEFT:['#FFE45C','#FFE45C','#fff'],RIGHT:['#fff','#FFE45C','#FFE45C'],FULL:['#FFE45C','#FFE45C','#FFE45C']};
+  const sqls={INNER:'SELECT m.nim, m.nama, n.mk, n.nilai\nFROM mahasiswa m\nINNER JOIN nilai n ON m.nim = n.nim;',
+    LEFT:'SELECT m.nim, m.nama, n.mk, n.nilai\nFROM mahasiswa m\nLEFT JOIN nilai n ON m.nim = n.nim;',
+    RIGHT:'SELECT n.nim, m.nama, n.mk, n.nilai\nFROM mahasiswa m\nRIGHT JOIN nilai n ON m.nim = n.nim;',
+    FULL:'-- MySQL/MariaDB tidak punya FULL OUTER JOIN\nSELECT m.nim, m.nama, n.mk, n.nilai FROM mahasiswa m LEFT JOIN nilai n ON m.nim=n.nim\nUNION\nSELECT n.nim, m.nama, n.mk, n.nilai FROM mahasiswa m RIGHT JOIN nilai n ON m.nim=n.nim;'};
+  function go(t){$$('.wg-btns button',w).forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+    const [a,b2,c]=col[t];$('.va',venn).setAttribute('fill',a);$('.vb',venn).setAttribute('fill',c);$('.vab',venn).setAttribute('fill',b2);
+    let rows=[];const mset=new Set(MHS.map(m=>m[0])),nset=new Set(NIL.map(n=>n[0]));
+    if(t!=='RIGHT')MHS.forEach(m=>{const ms=NIL.filter(n=>n[0]===m[0]);if(ms.length)ms.forEach(n=>rows.push([m[0],m[1],n[1],n[2]]));else if(t!=='INNER')rows.push([m[0],m[1],null,null]);});
+    if(t==='RIGHT')NIL.forEach(n=>{const m=MHS.find(x=>x[0]===n[0]);rows.push([n[0],m?m[1]:null,n[1],n[2]]);});
+    if(t==='FULL')NIL.filter(n=>!mset.has(n[0])).forEach(n=>rows.push([n[0],null,n[1],n[2]]));
+    L.forEach((r,i)=>{const on=t==='INNER'||t==='RIGHT'?nset.has(MHS[i][0]):true;r.className=on?'hit':'dim';});
+    R.forEach((r,i)=>{const on=t==='INNER'||t==='LEFT'?mset.has(NIL[i][0]):true;r.className=on?'hit':'dim';});
+    out.innerHTML=tableHTML({columns:['nim','nama','mk','nilai'],values:rows});sqlb.innerHTML=hl(sqls[t]);}
+  $$('.wg-btns button',w).forEach(b=>b.onclick=()=>go(b.dataset.t));go('INNER');};
+function hl(s){return esc(s).replace(/(--.*)$/gm,'<span class="cm">$1</span>').replace(/\b(SELECT|FROM|WHERE|INNER|LEFT|RIGHT|JOIN|ON|UNION|GROUP BY|HAVING|ORDER BY|AS|UPDATE|SET|INSERT|INTO|VALUES|GRANT|REVOKE|TO|CREATE|TABLE|PRIMARY KEY|NOT NULL|AND|CASE|WHEN|THEN|ELSE|END|CHAR|VARCHAR|INT|DATE|DECIMAL|BOOLEAN|TEXT|USING|AVG|COUNT|SUM|MIN|MAX)\b/g,'<span class="kw">$1</span>');}
+W.hl=hl;
+W.groupby=w=>{
+  const data=[['Ayu','Informatika',88],['Budi','Sastra Mesin',75],['Cecep','Informatika',64],['Dinda','Akuntansi',91],['Euis','Sastra Mesin',82],['Fajar','Akuntansi',70],['Gilang','Informatika',79]];
+  const box=$('.gout',w),sqlb=$('.gsql',w),fn=$('select',w),hv=$('input[type=range]',w),hvv=$('.hvv',w);let grouped=false;
+  const agg=(f,a)=>f==='COUNT'?a.length:f==='SUM'?a.reduce((x,y)=>x+y,0):f==='MAX'?Math.max(...a):f==='MIN'?Math.min(...a):Math.round(a.reduce((x,y)=>x+y,0)/a.length*100)/100;
+  function draw(){const f=fn.value,th=+hv.value;hvv.textContent=th?('HAVING '+f+'(nilai) > '+th):'(tanpa HAVING)';
+    if(!grouped){box.innerHTML='<table class="tbl"><tr><th>nama</th><th>jurusan</th><th>nilai</th></tr>'+data.map(d=>'<tr><td>'+d[0]+'</td><td>'+d[1]+'</td><td>'+d[2]+'</td></tr>').join('')+'</table><div class="rows-note">'+data.length+' rows in set</div>';
+      sqlb.innerHTML=hl('SELECT nama, jurusan, nilai\nFROM nilai_mhs;');return;}
+    const js=[...new Set(data.map(d=>d[1]))];
+    let html='<table class="tbl"><tr><th>jurusan</th><th>anggota</th><th>'+f+'(nilai)</th></tr>';let shown=0;
+    js.forEach((j,gi)=>{const v=data.filter(d=>d[1]===j);const a=agg(f,v.map(d=>d[2]));const pass=!th||a>th;if(pass)shown++;
+      html+='<tr class="grp-'+gi+(pass?'':' dim')+'"><td>'+j+'</td><td class="xs">'+v.map(d=>d[0]+' ('+d[2]+')').join(', ')+'</td><td><b>'+a+'</b></td></tr>';});
+    box.innerHTML=html+'</table><div class="rows-note">'+shown+' rows in set'+(th?' — baris redup tersaring HAVING':'')+'</div>';
+    sqlb.innerHTML=hl('SELECT jurusan, '+f+'(nilai)\nFROM nilai_mhs\nGROUP BY jurusan'+(th?'\nHAVING '+f+'(nilai) > '+th:'')+';');}
+  $('[data-a=g]',w).onclick=e=>{grouped=!grouped;e.target.textContent=grouped?'Lepas GROUP BY':'Terapkan GROUP BY jurusan';draw();};
+  fn.onchange=draw;hv.oninput=draw;draw();};
+W.pivot=w=>{
+  const longR=[[2022,'Basis Data',80],[2022,'Jarkom',77],[2023,'Basis Data',85],[2023,'Jarkom',72],[2024,'Basis Data',79],[2024,'Jarkom',88]];
+  const box=$('.pout',w),sqlb=$('.psql',w);let wide=false;
+  function draw(){if(!wide){box.innerHTML=tableHTML({columns:['tahun_masuk','matakuliah','rata2'],values:longR});
+      sqlb.innerHTML=hl('SELECT tahun_masuk, matakuliah, AVG(nilai) AS rata2\nFROM nilai JOIN mahasiswa USING (nim)\nGROUP BY tahun_masuk, matakuliah;');}
+    else{const ys=[...new Set(longR.map(r=>r[0]))];box.innerHTML=tableHTML({columns:['tahun_masuk','Basis Data','Jarkom'],values:ys.map(y=>[y,longR.find(r=>r[0]===y&&r[1]==='Basis Data')[2],longR.find(r=>r[0]===y&&r[1]==='Jarkom')[2]])});
+      sqlb.innerHTML=hl("SELECT tahun_masuk,\n  AVG(CASE WHEN matakuliah='Basis Data' THEN nilai END) AS `Basis Data`,\n  AVG(CASE WHEN matakuliah='Jarkom' THEN nilai END) AS `Jarkom`\nFROM nilai JOIN mahasiswa USING (nim)\nGROUP BY tahun_masuk;");}}
+  $('[data-a=p]',w).onclick=e=>{wide=!wide;e.target.textContent=wide?'Kembali ke format panjang':'Putar jadi crosstab';draw();};draw();};
+W.trigger=w=>{
+  const rows=[['2023100011','Basis Data',78],['2023100012','Basis Data',84]];let log=[],id=0;
+  const tbN=$('.tn',w),tbL=$('.tl',w),sel=$('select',w),inp=$('.num-in',w),sqlb=$('.tsql',w),steps=$$('.st8',w),guard=$('#tg-guard',w);
+  function draw(){tbN.innerHTML=tableHTML({columns:['nim','matakuliah','nilai'],values:rows});
+    tbL.innerHTML=log.length?tableHTML({columns:['log_id','nim','nilai_lama','nilai_baru','waktu'],values:log}):'<div class="xs">Log_Nilai masih kosong.</div>';}
+  $('[data-a=u]',w).onclick=()=>{const i=+sel.value,nv=+inp.value;if(isNaN(nv))return;const old=rows[i][2];
+    sqlb.innerHTML=hl("UPDATE nilai SET nilai = "+nv+" WHERE nim = '"+rows[i][0]+"';");
+    steps.forEach(s=>s.classList.remove('lit'));
+    const seq=[()=>{steps[0].classList.add('lit');rows[i][2]=nv;draw();},()=>steps[1].classList.add('lit'),()=>{
+      if(guard.checked&&old===nv){steps[2].textContent='IF: nilai sama → tidak dicatat';steps[2].classList.add('lit');return;}
+      steps[2].textContent='INSERT INTO log_nilai';steps[2].classList.add('lit');const d=new Date();log.push([++id,rows[i][0],old,nv,d.toTimeString().slice(0,8)]);draw();}];
+    seq.forEach((f,k)=>setTimeout(f,RM?0:k*550));};
+  draw();};
+W.dcl=w=>{
+  const privs=['SELECT','INSERT','UPDATE','DELETE'];const have={SELECT:false,INSERT:false,UPDATE:false,DELETE:false};
+  const out=$('.dsql',w),resp=$('.dresp',w),scope=$('select',w);
+  $$('.matrix input',w).forEach(c=>c.onchange=()=>{const p=c.dataset.p;have[p]=c.checked;const tgt=scope.value;
+    out.innerHTML=hl((c.checked?'GRANT '+p+' ON '+tgt+' TO ':'REVOKE '+p+' ON '+tgt+' FROM ')+"'praktikan'@'localhost';");resp.className='resp';resp.textContent='';});
+  $$('[data-try]',w).forEach(b=>b.onclick=()=>{const p=b.dataset.try;
+    resp.className='resp '+(have[p]?'ok':'no');
+    resp.textContent=have[p]?('praktikan> '+b.dataset.q+'\nQuery OK — hak '+p+' dimiliki.'):('praktikan> '+b.dataset.q+"\nERROR 1142 (42000): "+p+" command denied to user 'praktikan'@'localhost' for table 'mahasiswa'");});};
+W.ddl=w=>{
+  const cols=[['nim','CHAR','10',true,true],['nama','VARCHAR','100',false,true]];
+  const out=$('.dsql',w),prev=$('.dprev',w),f=$('.form-row',w);
+  function draw(){const lines=cols.map(c=>'  '+c[0]+' '+c[1]+(c[2]&&!['INT','DATE','BOOLEAN','TEXT'].includes(c[1])?'('+c[2]+')':'')+(c[4]&&!c[3]?' NOT NULL':''));
+    const pk=cols.filter(c=>c[3]).map(c=>c[0]);if(pk.length)lines.push('  PRIMARY KEY ('+pk.join(', ')+')');
+    out.innerHTML=hl('CREATE TABLE mahasiswa (\n'+lines.join(',\n')+'\n);');
+    prev.innerHTML='<table class="tbl"><tr>'+cols.map(c=>'<th'+(c[3]?' class="pk"':'')+'>'+esc(c[0])+'</th>').join('')+'</tr><tr>'+cols.map(c=>'<td class="xs">'+c[1]+'</td>').join('')+'</tr></table>';}
+  $('[data-a=add]',f).onclick=()=>{const n=$('.cn',f).value.trim().replace(/\s+/g,'_');if(!n)return;cols.push([n,$('.ct',f).value,$('.cl',f).value.trim(),$('.cp',f).checked,$('.cnn',f).checked]);$('.cn',f).value='';draw();};
+  $('[data-a=undo]',f).onclick=()=>{if(cols.length>1)cols.pop();draw();};draw();};
+
+update();
+const h=parseInt(location.hash.slice(1));show(isNaN(h)?0:h-1,1);
+})();
+</script><script src="shared/config.js"></script><script src="shared/tracking.js"></script></body></html>
