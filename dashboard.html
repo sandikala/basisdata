@@ -1,0 +1,270 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard Dosen — GHK2AAB3 Basis Data</title>
+<style>
+:root{--ink:#1B2A4A;--ink2:#50607F;--key:#2F5BEA;--grid:#DFE6F1;--paper:#F4F7FB;--ok:#16a34a;--err:#dc2626}
+body{margin:0;font-family:system-ui,'Plus Jakarta Sans',sans-serif;color:var(--ink);background:var(--paper)}
+header{background:#141b30;color:#fff;padding:18px 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+header h1{font-size:18px;margin:0} header .who{font-size:13px;color:#9fb0d9}
+main{max-width:1200px;margin:0 auto;padding:24px 20px 60px}
+.card{background:#fff;border:1px solid var(--grid);border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 1px 3px rgba(20,30,60,.05)}
+input,select{font:inherit;padding:8px 10px;border:1px solid #C7D2E8;border-radius:8px}
+button{font:inherit;padding:9px 16px;border-radius:8px;border:none;background:var(--key);color:#fff;cursor:pointer;font-weight:600}
+button.ghost{background:#fff;border:1px solid var(--key);color:var(--key)}
+button:disabled{opacity:.5;cursor:default}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{padding:8px 10px;border-bottom:1px solid #E7ECF5;text-align:left;white-space:nowrap}
+th{background:#F2F5FC;position:sticky;top:0}
+tr:hover td{background:#F7F9FF}
+.tbl-wrap{overflow:auto;max-height:70vh;border:1px solid var(--grid);border-radius:10px}
+.msg{font-size:13px;padding:10px 14px;border-radius:8px;margin-top:10px}
+.msg.ok{background:#EAFBF1;color:var(--ok)} .msg.err{background:#FDEDEE;color:var(--err)}
+.login-box{max-width:380px;margin:80px auto;text-align:center}
+.login-box input{width:100%;box-sizing:border-box;margin-bottom:10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.small{font-size:12px;color:var(--ink2)}
+.pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700}
+.pill.ok{background:#EAFBF1;color:var(--ok)} .pill.warn{background:#FFF6DE;color:#92660b}
+.tabs{display:flex;gap:6px;margin-bottom:16px}
+.tabs button{background:#fff;color:var(--ink2);border:1px solid var(--grid)}
+.tabs button.active{background:var(--key);color:#fff;border-color:var(--key)}
+</style>
+</head><body>
+
+<div id="root"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="shared/config.js"></script>
+<script>
+const CFG = window.LMS_CONFIG || {};
+const CONFIGURED = !!(CFG.SUPABASE_URL && !CFG.SUPABASE_URL.includes("YOUR-PROJECT"));
+const root = document.getElementById("root");
+
+if (!CONFIGURED) {
+  root.innerHTML = '<div class="login-box card"><h2>Belum dikonfigurasi</h2><p class="small">Isi <code>shared/config.js</code> dengan Project URL dan anon key Supabase, lalu muat ulang halaman ini.</p></div>';
+} else {
+  const supa = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY);
+  boot();
+}
+
+async function boot() {
+  const { data: { session } } = await supa.auth.getSession();
+  supa.auth.onAuthStateChange((_e, s) => { if ((s && !session) || (!s && session)) location.reload(); });
+  if (session) renderDashboard(session); else renderLogin();
+}
+
+function renderLogin() {
+  root.innerHTML = `
+  <div class="login-box card">
+    <h2 style="margin-top:0">Masuk sebagai Dosen</h2>
+    <p class="small">Gunakan akun yang dibuat khusus untuk dosen di Supabase Authentication.</p>
+    <input id="email" type="email" placeholder="Email dosen">
+    <input id="pass" type="password" placeholder="Password">
+    <button id="btn-login" style="width:100%">Masuk</button>
+    <div id="msg"></div>
+    <p class="small" style="margin-top:14px">Belum punya akun? Buat lewat Supabase Dashboard → Authentication → Users → Add user.</p>
+  </div>`;
+  document.getElementById("btn-login").onclick = async () => {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("pass").value;
+    const msg = document.getElementById("msg");
+    msg.innerHTML = "";
+    const { error } = await supa.auth.signInWithPassword({ email, password });
+    if (error) { msg.innerHTML = `<div class="msg err">${error.message}</div>`; return; }
+    location.reload();
+  };
+}
+
+async function renderDashboard(session) {
+  root.innerHTML = `
+  <header>
+    <h1>📊 Dashboard Dosen — GHK2AAB3 Basis Data</h1>
+    <div class="who">${session.user.email} · <a href="#" id="logout" style="color:#9fb0d9">keluar</a></div>
+  </header>
+  <main>
+    <div class="tabs">
+      <button class="active" data-t="rekap">Rekap Nilai Akhir</button>
+      <button data-t="asesmen">Input Nilai Asesmen</button>
+      <button data-t="bobot">Bobot Komponen</button>
+      <button data-t="log">Log Aktivitas Mentah</button>
+    </div>
+    <div id="tab-content"></div>
+  </main>`;
+  document.getElementById("logout").onclick = async (e) => { e.preventDefault(); await supa.auth.signOut(); location.reload(); };
+
+  document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+    document.querySelectorAll(".tabs button").forEach(x => x.classList.remove("active"));
+    b.classList.add("active");
+    loadTab(b.dataset.t);
+  });
+  loadTab("rekap");
+}
+
+async function loadTab(t) {
+  const box = document.getElementById("tab-content");
+  box.innerHTML = '<p class="small">Memuat…</p>';
+  if (t === "rekap") return tabRekap(box);
+  if (t === "asesmen") return tabAsesmen(box);
+  if (t === "bobot") return tabBobot(box);
+  if (t === "log") return tabLog(box);
+}
+
+function toCSV(rows, cols) {
+  const head = cols.join(",");
+  const body = rows.map(r => cols.map(c => JSON.stringify(r[c] ?? "")).join(",")).join("\n");
+  return head + "\n" + body;
+}
+function downloadCSV(name, csv) {
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name; a.click();
+}
+
+async function tabRekap(box) {
+  const { data, error } = await supa.from("rekap_nilai_akhir").select("*").order("kelas").order("nim");
+  if (error) { box.innerHTML = `<div class="msg err">${error.message}</div>`; return; }
+  const cols = ["nim","nama","kelas","pertemuan_diikuti","skor_partisipasi","skor_asesmen1","skor_asesmen2","skor_asesmen3","nilai_akhir"];
+  const labels = { nim:"NIM", nama:"Nama", kelas:"Kelas", pertemuan_diikuti:"Pertemuan diikuti", skor_partisipasi:"Partisipasi", skor_asesmen1:"Asesmen 1", skor_asesmen2:"Asesmen 2", skor_asesmen3:"Asesmen 3", nilai_akhir:"Nilai Akhir" };
+  const kelasList = [...new Set(data.map(r => r.kelas).filter(Boolean))].sort();
+  box.innerHTML = `
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <label class="small" style="margin:0">Kelas:</label>
+        <select id="filter-kelas"><option value="">Semua kelas</option>${kelasList.map(k=>`<option value="${k}">Kelas ${k}</option>`).join("")}</select>
+        <span class="small" id="count-info"></span>
+      </div>
+      <button class="ghost" id="dl">Unduh CSV</button>
+    </div>
+    <div class="tbl-wrap"><table><thead><tr>${cols.map(c=>`<th>${labels[c]}</th>`).join("")}</tr></thead>
+    <tbody id="tbody-rekap"></tbody></table></div>
+  </div>`;
+  function renderRows(kelas) {
+    const rows = kelas ? data.filter(r => r.kelas === kelas) : data;
+    document.getElementById("tbody-rekap").innerHTML = rows.map(r => `<tr>${cols.map(c=>`<td>${r[c] ?? "—"}</td>`).join("")}</tr>`).join("");
+    document.getElementById("count-info").textContent = `${rows.length} mahasiswa`;
+    document.getElementById("dl").onclick = () => downloadCSV(`nilai_akhir${kelas ? "_kelas"+kelas : ""}.csv`, toCSV(rows, cols));
+  }
+  document.getElementById("filter-kelas").onchange = (e) => renderRows(e.target.value);
+  renderRows("");
+}
+
+async function tabAsesmen(box) {
+  const [{ data: parts }, { data: nilai }] = await Promise.all([
+    supa.from("rekap_partisipasi").select("nim,nama,kelas"),
+    supa.from("nilai_manual").select("*")
+  ]);
+  const map = {};
+  (parts || []).forEach(p => map[p.nim] = { nim: p.nim, nama: p.nama, kelas: p.kelas || "", asesmen1:"", asesmen2:"", asesmen3:"" });
+  (nilai || []).forEach(n => {
+    if (!map[n.nim]) map[n.nim] = { nim: n.nim, nama: n.nama, kelas: n.kelas || "", asesmen1:"", asesmen2:"", asesmen3:"" };
+    if (!map[n.nim].kelas && n.kelas) map[n.nim].kelas = n.kelas;
+    map[n.nim][n.komponen] = n.skor;
+  });
+  let rows = Object.values(map).sort((a,b)=>a.nim.localeCompare(b.nim));
+  const kelasList = [...new Set(rows.map(r => r.kelas).filter(Boolean))].sort();
+  const kelasOpts = ["4","5",...kelasList].filter((v,i,a)=>a.indexOf(v)===i);
+  box.innerHTML = `
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:10px">
+      <p class="small" style="margin:0">Isi skor 0–100 untuk Asesmen 1/2/3 (dinilai manual dari studi kasus, presentasi/demo, dan ujian komprehensif), lalu klik Simpan per baris.</p>
+      <div style="display:flex;align-items:center;gap:8px">
+        <label class="small" style="margin:0">Kelas:</label>
+        <select id="filter-kelas"><option value="">Semua kelas</option>${kelasList.map(k=>`<option value="${k}">Kelas ${k}</option>`).join("")}</select>
+      </div>
+    </div>
+    <div id="tbl-holder"></div>
+    <details style="margin-top:14px"><summary style="cursor:pointer;font-size:13px;color:var(--key)">+ Tambah mahasiswa manual (belum pernah login di deck)</summary>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <input id="new-nim" placeholder="NIM" style="width:130px">
+        <input id="new-nama" placeholder="Nama" style="width:180px">
+        <select id="new-kelas"><option value="">Kelas…</option>${kelasOpts.map(k=>`<option value="${k}">Kelas ${k}</option>`).join("")}</select>
+        <button id="new-add">Tambah baris</button>
+      </div>
+    </details>
+    <div id="msg"></div>
+  </div>`;
+
+  function renderTable(kelas) {
+    const shown = kelas ? rows.filter(r => r.kelas === kelas) : rows;
+    document.getElementById("tbl-holder").innerHTML = `
+    <div class="tbl-wrap"><table><thead><tr><th>NIM</th><th>Nama</th><th>Kelas</th><th>Asesmen 1</th><th>Asesmen 2</th><th>Asesmen 3</th><th></th></tr></thead>
+    <tbody>${shown.map(r => `<tr data-nim="${r.nim}">
+      <td>${r.nim}</td><td>${r.nama || "—"}</td><td>${r.kelas || "—"}</td>
+      <td><input type="number" min="0" max="100" class="a1" value="${r.asesmen1}" style="width:70px"></td>
+      <td><input type="number" min="0" max="100" class="a2" value="${r.asesmen2}" style="width:70px"></td>
+      <td><input type="number" min="0" max="100" class="a3" value="${r.asesmen3}" style="width:70px"></td>
+      <td><button class="save">Simpan</button></td>
+    </tr>`).join("")}</tbody></table></div>`;
+    document.querySelectorAll("tr[data-nim]").forEach(tr => {
+      tr.querySelector(".save").onclick = async () => {
+        const nim = tr.dataset.nim;
+        const row = rows.find(r => r.nim === nim);
+        const vals = { asesmen1: tr.querySelector(".a1").value, asesmen2: tr.querySelector(".a2").value, asesmen3: tr.querySelector(".a3").value };
+        const upserts = Object.entries(vals).filter(([,v]) => v !== "").map(([komponen, skor]) => ({ nim, nama: row.nama, kelas: row.kelas || null, komponen, skor: Number(skor) }));
+        const msg = document.getElementById("msg");
+        if (!upserts.length) return;
+        const { error } = await supa.from("nilai_manual").upsert(upserts, { onConflict: "nim,komponen" });
+        msg.innerHTML = error ? `<div class="msg err">${error.message}</div>` : `<div class="msg ok">Tersimpan untuk ${nim}.</div>`;
+      };
+    });
+  }
+  document.getElementById("filter-kelas").onchange = (e) => renderTable(e.target.value);
+  document.getElementById("new-add").onclick = () => {
+    const nim = document.getElementById("new-nim").value.trim();
+    const nama = document.getElementById("new-nama").value.trim();
+    const kelas = document.getElementById("new-kelas").value;
+    if (!nim) { alert("NIM wajib diisi."); return; }
+    if (rows.find(r => r.nim === nim)) { alert("NIM sudah ada di tabel."); return; }
+    rows.push({ nim, nama, kelas, asesmen1:"", asesmen2:"", asesmen3:"" });
+    document.getElementById("filter-kelas").value = "";
+    renderTable("");
+  };
+  renderTable("");
+}
+
+async function tabBobot(box) {
+  const { data, error } = await supa.from("bobot_nilai").select("*").order("komponen");
+  if (error) { box.innerHTML = `<div class="msg err">${error.message}</div>`; return; }
+  const labels = { partisipasi:"Partisipasi & kuis", asesmen1:"Asesmen 1", asesmen2:"Asesmen 2 (proyek)", asesmen3:"Asesmen 3" };
+  box.innerHTML = `
+  <div class="card">
+    <p class="small">Sesuaikan bobot dengan RPS resmi mata kuliah. Total idealnya 100%.</p>
+    <div class="grid2">${data.map(d => `
+      <div><label>${labels[d.komponen] || d.komponen}</label><br>
+      <input type="number" min="0" max="100" data-k="${d.komponen}" value="${d.bobot_persen}" style="width:100px"> %</div>
+    `).join("")}</div>
+    <button id="save-bobot" style="margin-top:16px">Simpan bobot</button>
+    <div id="msg"></div>
+  </div>`;
+  document.getElementById("save-bobot").onclick = async () => {
+    const rows = Array.from(box.querySelectorAll("[data-k]")).map(i => ({ komponen: i.dataset.k, bobot_persen: Number(i.value) }));
+    const { error } = await supa.from("bobot_nilai").upsert(rows, { onConflict: "komponen" });
+    document.getElementById("msg").innerHTML = error ? `<div class="msg err">${error.message}</div>` : `<div class="msg ok">Bobot tersimpan.</div>`;
+  };
+}
+
+async function tabLog(box) {
+  const { data, error } = await supa.from("log_aktivitas").select("*").order("created_at", { ascending: false }).limit(500);
+  if (error) { box.innerHTML = `<div class="msg err">${error.message}</div>`; return; }
+  const kelasList = [...new Set(data.map(r => r.kelas).filter(Boolean))].sort();
+  box.innerHTML = `
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:10px">
+      <p class="small" style="margin:0">500 aktivitas terbaru (mentah, belum diagregasi). Berguna untuk memeriksa kejanggalan.</p>
+      <div style="display:flex;align-items:center;gap:8px">
+        <label class="small" style="margin:0">Kelas:</label>
+        <select id="filter-kelas"><option value="">Semua kelas</option>${kelasList.map(k=>`<option value="${k}">Kelas ${k}</option>`).join("")}</select>
+      </div>
+    </div>
+    <div class="tbl-wrap"><table><thead><tr><th>Waktu</th><th>NIM</th><th>Nama</th><th>Kelas</th><th>P</th><th>Jenis</th><th>Benar</th><th>Detail</th></tr></thead>
+    <tbody id="tbody-log"></tbody></table></div>
+  </div>`;
+  function renderRows(kelas) {
+    const rows = kelas ? data.filter(r => r.kelas === kelas) : data;
+    document.getElementById("tbody-log").innerHTML = rows.map(r => `<tr><td>${new Date(r.created_at).toLocaleString("id-ID")}</td><td>${r.nim}</td><td>${r.nama||""}</td><td>${r.kelas||"—"}</td><td>${r.pertemuan}</td><td>${r.event_type}</td><td>${r.benar===null?"—":(r.benar?"✅":"❌")}</td><td style="max-width:320px;white-space:normal">${JSON.stringify(r.detail)}</td></tr>`).join("");
+  }
+  document.getElementById("filter-kelas").onchange = (e) => renderRows(e.target.value);
+  renderRows("");
+}
+</script>
+</body></html>
