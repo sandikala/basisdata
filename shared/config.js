@@ -8,8 +8,8 @@
 // INSERT log aktivitas, tidak bisa membaca data mahasiswa lain.
 // ============================================================
 window.LMS_CONFIG = {
-  SUPABASE_URL: "https://YOUR-PROJECT-REF.supabase.co",
-  SUPABASE_ANON_KEY: "YOUR-ANON-PUBLIC-KEY",
+  SUPABASE_URL: "https://shaewuwsrhkmzrxbwbyd.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_Ld9CwVYVigRIgZCRMd1LSQ_A0sm_0aR",
   // Daftar kelas yang tampil di dropdown saat mahasiswa login.
   // Tambah/kurangi angka sesuai kebutuhan (mis. tambah "6" kalau ada kelas baru).
   KELAS_LIST: ["4", "5"]
