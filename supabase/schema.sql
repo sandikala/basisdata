@@ -16,6 +16,7 @@ create table if not exists log_aktivitas (
   created_at timestamptz not null default now()
 );
 create index if not exists idx_log_nim on log_aktivitas (nim);
+create index if not exists idx_log_kelas on log_aktivitas (kelas);
 create index if not exists idx_log_pertemuan on log_aktivitas (pertemuan);
 create index if not exists idx_log_event on log_aktivitas (event_type);
 
@@ -70,6 +71,7 @@ create policy "publik baca bobot" on bobot_nilai for select to authenticated usi
 
 -- ================================================================
 -- 4) View rekap: partisipasi per pertemuan
+drop view if exists rekap_partisipasi_pertemuan;
 create or replace view rekap_partisipasi_pertemuan as
 select
   nim, max(nama) as nama, max(kelas) as kelas, pertemuan,
@@ -84,6 +86,7 @@ group by nim, pertemuan;
 
 -- 5) View rekap: skor partisipasi keseluruhan (0-100)
 --    60% dari akurasi kuis, 40% dari keterlibatan (poll/cloud/playground)
+drop view if exists rekap_partisipasi;
 create or replace view rekap_partisipasi as
 select
   nim, max(nama) as nama, max(kelas) as kelas,
@@ -96,6 +99,7 @@ from rekap_partisipasi_pertemuan
 group by nim;
 
 -- 6) View rekap nilai akhir (partisipasi otomatis + 3 asesmen manual, sesuai bobot)
+drop view if exists rekap_nilai_akhir;
 create or replace view rekap_nilai_akhir as
 select
   p.nim, p.nama, p.kelas, p.skor_partisipasi, p.pertemuan_diikuti,
