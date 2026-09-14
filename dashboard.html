@@ -118,10 +118,10 @@ if (!CONFIGURED) {
   }
   
   async function tabRekap(box) {
-    const { data, error } = await supa.from("rekap_nilai_akhir").select("*").order("nim");
+    const { data, error } = await supa.from("rekap_nilai_akhir").select("*").order("kelas,nim");
     if (error) { box.innerHTML = `<div class="msg err">${error.message}</div>`; return; }
-    const cols = ["nim","nama","pertemuan_diikuti","skor_partisipasi","skor_asesmen1","skor_asesmen2","skor_asesmen3","nilai_akhir"];
-    const labels = { nim:"NIM", nama:"Nama", pertemuan_diikuti:"Pertemuan diikuti", skor_partisipasi:"Partisipasi", skor_asesmen1:"Asesmen 1", skor_asesmen2:"Asesmen 2", skor_asesmen3:"Asesmen 3", nilai_akhir:"Nilai Akhir" };
+    const cols = ["kelas","nim","nama","pertemuan_diikuti","skor_partisipasi","skor_asesmen1","skor_asesmen2","skor_asesmen3","nilai_akhir"];
+    const labels = { kelas:"Kelas", nim:"NIM", nama:"Nama", pertemuan_diikuti:"Pertemuan diikuti", skor_partisipasi:"Partisipasi", skor_asesmen1:"Asesmen 1", skor_asesmen2:"Asesmen 2", skor_asesmen3:"Asesmen 3", nilai_akhir:"Nilai Akhir" };
     box.innerHTML = `
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
@@ -136,18 +136,19 @@ if (!CONFIGURED) {
   
   async function tabAsesmen(box) {
     const [{ data: parts }, { data: nilai }] = await Promise.all([
-      supa.from("rekap_partisipasi").select("nim,nama"),
+      supa.from("rekap_partisipasi").select("nim,nama,kelas"),
       supa.from("nilai_manual").select("*")
     ]);
     const map = {};
-    (parts || []).forEach(p => map[p.nim] = { nim: p.nim, nama: p.nama, asesmen1:"", asesmen2:"", asesmen3:"" });
-    (nilai || []).forEach(n => { if(!map[n.nim]) map[n.nim] = { nim:n.nim, nama:n.nama, asesmen1:"",asesmen2:"",asesmen3:"" }; map[n.nim][n.komponen.replace("asesmen","asesmen")] = n.skor; });
-    const rows = Object.values(map).sort((a,b)=>a.nim.localeCompare(b.nim));
+    (parts || []).forEach(p => map[p.nim] = { nim: p.nim, nama: p.nama, kelas: p.kelas || "", asesmen1:"", asesmen2:"", asesmen3:"" });
+    (nilai || []).forEach(n => { if(!map[n.nim]) map[n.nim] = { nim:n.nim, nama:n.nama, kelas:n.kelas||"", asesmen1:"",asesmen2:"",asesmen3:"" }; map[n.nim][n.komponen.replace("asesmen","asesmen")] = n.skor; });
+    const rows = Object.values(map).sort((a,b)=>(a.kelas||"").localeCompare(b.kelas||"")||a.nim.localeCompare(b.nim));
     box.innerHTML = `
     <div class="card">
       <p class="small">Isi skor 0–100 untuk Asesmen 1/2/3 (dinilai manual dari studi kasus, presentasi/demo, dan ujian komprehensif), lalu klik Simpan per baris. Data otomatis masuk perhitungan nilai akhir.</p>
-      <div class="tbl-wrap"><table><thead><tr><th>NIM</th><th>Nama</th><th>Asesmen 1</th><th>Asesmen 2</th><th>Asesmen 3</th><th></th></tr></thead>
+      <div class="tbl-wrap"><table><thead><tr><th>Kelas</th><th>NIM</th><th>Nama</th><th>Asesmen 1</th><th>Asesmen 2</th><th>Asesmen 3</th><th></th></tr></thead>
       <tbody>${rows.map(r => `<tr data-nim="${r.nim}">
+        <td><select class="kelas" style="width:60px"><option value="">-</option><option value="4" ${r.kelas==="4"?"selected":""}>4</option><option value="5" ${r.kelas==="5"?"selected":""}>5</option></select></td>
         <td>${r.nim}</td><td>${r.nama || "—"}</td>
         <td><input type="number" min="0" max="100" class="a1" value="${r.asesmen1}" style="width:70px"></td>
         <td><input type="number" min="0" max="100" class="a2" value="${r.asesmen2}" style="width:70px"></td>
@@ -159,9 +160,10 @@ if (!CONFIGURED) {
     box.querySelectorAll("tr[data-nim]").forEach(tr => {
       tr.querySelector(".save").onclick = async () => {
         const nim = tr.dataset.nim;
-        const nama = tr.children[1].textContent;
+        const nama = tr.children[2].textContent;
+        const kelas = tr.querySelector(".kelas").value || null;
         const vals = { asesmen1: tr.querySelector(".a1").value, asesmen2: tr.querySelector(".a2").value, asesmen3: tr.querySelector(".a3").value };
-        const upserts = Object.entries(vals).filter(([,v]) => v !== "").map(([komponen, skor]) => ({ nim, nama, komponen, skor: Number(skor) }));
+        const upserts = Object.entries(vals).filter(([,v]) => v !== "").map(([komponen, skor]) => ({ nim, nama, kelas, komponen, skor: Number(skor) }));
         const msg = document.getElementById("msg");
         if (!upserts.length) return;
         const { error } = await supa.from("nilai_manual").upsert(upserts, { onConflict: "nim,komponen" });
@@ -197,8 +199,8 @@ if (!CONFIGURED) {
     box.innerHTML = `
     <div class="card">
       <p class="small">500 aktivitas terbaru (mentah, belum diagregasi). Berguna untuk memeriksa kejanggalan.</p>
-      <div class="tbl-wrap"><table><thead><tr><th>Waktu</th><th>NIM</th><th>Nama</th><th>P</th><th>Jenis</th><th>Benar</th><th>Detail</th></tr></thead>
-      <tbody>${data.map(r => `<tr><td>${new Date(r.created_at).toLocaleString("id-ID")}</td><td>${r.nim}</td><td>${r.nama||""}</td><td>${r.pertemuan}</td><td>${r.event_type}</td><td>${r.benar===null?"—":r.benar?"✓":"✗"}</td><td><code style="font-size:11px">${r.detail||""}</code></td></tr>`).join("")}</tbody></table></div>
+      <div class="tbl-wrap"><table><thead><tr><th>Waktu</th><th>Kelas</th><th>NIM</th><th>Nama</th><th>P</th><th>Jenis</th><th>Benar</th><th>Detail</th></tr></thead>
+      <tbody>${data.map(r => `<tr><td>${new Date(r.created_at).toLocaleString("id-ID")}</td><td>${r.kelas||"—"}</td><td>${r.nim}</td><td>${r.nama||""}</td><td>${r.pertemuan}</td><td>${r.event_type}</td><td>${r.benar===null?"—":r.benar?"✓":"✗"}</td><td><code style="font-size:11px">${r.detail||""}</code></td></tr>`).join("")}</tbody></table></div>
     </div>`;
   }
   
