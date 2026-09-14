@@ -37,12 +37,13 @@ tr:hover td{background:#F7F9FF}
 <script>
 const CFG = window.LMS_CONFIG || {};
 const CONFIGURED = !!(CFG.SUPABASE_URL && !CFG.SUPABASE_URL.includes("YOUR-PROJECT"));
+let supa;
 const root = document.getElementById("root");
 
 if (!CONFIGURED) {
   root.innerHTML = '<div class="login-box card"><h2>Belum dikonfigurasi</h2><p class="small">Isi <code>shared/config.js</code> dengan Project URL dan anon key Supabase, lalu muat ulang halaman ini.</p></div>';
 } else {
-  const supa = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY);
+  supa = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY);
   boot();
 }
 
