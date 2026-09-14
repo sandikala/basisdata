@@ -8,6 +8,7 @@ create table if not exists log_aktivitas (
   id bigint generated always as identity primary key,
   nim text not null,
   nama text,
+  kelas text,
   pertemuan int not null,
   event_type text not null check (event_type in ('deck_open','deck_time','quiz','poll','cloud','playground')),
   detail jsonb not null default '{}'::jsonb,
@@ -38,6 +39,7 @@ create policy "dosen baca log" on log_aktivitas
 create table if not exists nilai_manual (
   nim text not null,
   nama text,
+  kelas text,
   komponen text not null check (komponen in ('asesmen1','asesmen2','asesmen3')),
   skor numeric not null check (skor >= 0 and skor <= 100),
   catatan text,
@@ -70,7 +72,7 @@ create policy "publik baca bobot" on bobot_nilai for select to authenticated usi
 -- 4) View rekap: partisipasi per pertemuan
 create or replace view rekap_partisipasi_pertemuan as
 select
-  nim, max(nama) as nama, pertemuan,
+  nim, max(nama) as nama, max(kelas) as kelas, pertemuan,
   count(*) filter (where event_type = 'quiz') as jml_kuis,
   count(*) filter (where event_type = 'quiz' and benar) as kuis_benar,
   count(*) filter (where event_type = 'poll') as jml_poll,
@@ -84,7 +86,7 @@ group by nim, pertemuan;
 --    60% dari akurasi kuis, 40% dari keterlibatan (poll/cloud/playground)
 create or replace view rekap_partisipasi as
 select
-  nim, max(nama) as nama,
+  nim, max(nama) as nama, max(kelas) as kelas,
   round(avg(
     (case when jml_kuis > 0 then (kuis_benar::numeric / jml_kuis) else 0 end) * 60
     + least(1, (jml_poll + jml_cloud + jml_playground)::numeric / 3) * 40
@@ -96,7 +98,7 @@ group by nim;
 -- 6) View rekap nilai akhir (partisipasi otomatis + 3 asesmen manual, sesuai bobot)
 create or replace view rekap_nilai_akhir as
 select
-  p.nim, p.nama, p.skor_partisipasi, p.pertemuan_diikuti,
+  p.nim, p.nama, p.kelas, p.skor_partisipasi, p.pertemuan_diikuti,
   a1.skor as skor_asesmen1, a2.skor as skor_asesmen2, a3.skor as skor_asesmen3,
   round(
     p.skor_partisipasi * (select bobot_persen from bobot_nilai where komponen = 'partisipasi') / 100
